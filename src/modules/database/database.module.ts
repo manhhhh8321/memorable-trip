@@ -3,10 +3,10 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
   DATABASE_HOST,
   DATABASE_TYPE,
-  MYSQL_DATABASE,
-  MYSQL_PORT,
-  MYSQL_PASSWORD,
-  MYSQL_USER,
+  POSTGRES_DATABASE,
+  POSTGRES_PORT,
+  POSTGRES_PASSWORD,
+  POSTGRES_USER,
   CACHE_TYPE,
   CACHE_HOST,
   CACHE_PORT,
@@ -21,24 +21,24 @@ import { User } from '../users/entities/user.entity';
         return {
           type: DATABASE_TYPE as any,
           host: DATABASE_HOST,
-          port: MYSQL_PORT,
-          username: MYSQL_USER,
-          password: MYSQL_PASSWORD,
-          database: MYSQL_DATABASE,
+          port: POSTGRES_PORT,
+          username: POSTGRES_USER,
+          password: POSTGRES_PASSWORD,
+          database: POSTGRES_DATABASE,
           // try autoload entities
           autoLoadEntities: true,
           entities: [User],
           // use cli and run schema:sync is better for secured data
-          synchronize: false,
+          synchronize: true,
           // cache
-          cache: {
-            type: CACHE_TYPE as any,
-            options: {
-              host: CACHE_HOST,
-              port: CACHE_PORT,
-            },
-            ignoreErrors: true,
-          },
+          // cache: {
+          //   type: CACHE_TYPE as any,
+          //   options: {
+          //     host: CACHE_HOST,
+          //     port: CACHE_PORT,
+          //   },
+          //   ignoreErrors: true,
+          // },
           //logging
           logging: ['query', 'error'],
           logger: 'file',

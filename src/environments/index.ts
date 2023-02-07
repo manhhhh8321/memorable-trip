@@ -12,10 +12,10 @@ const SERVER_PORT: number = +process.env.SERVER_PORT || 3000;
 // database
 const DATABASE_TYPE: string = process.env.DATABASE_TYPE || NEED_TO_CONFIGURED;
 const DATABASE_HOST: string = process.env.DATABASE_HOST || NEED_TO_CONFIGURED;
-const MYSQL_DATABASE: string = process.env.MYSQL_DATABASE || NEED_TO_CONFIGURED;
-const MYSQL_USER: string = process.env.MYSQL_USER || NEED_TO_CONFIGURED;
-const MYSQL_PASSWORD: string = process.env.MYSQL_PASSWORD || NEED_TO_CONFIGURED;
-const MYSQL_PORT: number = +process.env.MYSQL_PORT || 3306;
+const POSTGRES_DATABASE: string = process.env.POSTGRES_DATABASE || NEED_TO_CONFIGURED;
+const POSTGRES_USER: string = process.env.POSTGRES_USER || NEED_TO_CONFIGURED;
+const POSTGRES_PASSWORD: string = process.env.POSTGRES_PASSWORD || NEED_TO_CONFIGURED;
+const POSTGRES_PORT: number = +process.env.POSTGRES_PORT || 3306;
 //cache query
 const CACHE_TYPE: string = process.env.CACHE_TYPE || NEED_TO_CONFIGURED;
 const CACHE_HOST: string = process.env.CACHE_HOST || NEED_TO_CONFIGURED;
@@ -29,10 +29,10 @@ export {
   SERVER_PORT,
   DATABASE_HOST,
   DATABASE_TYPE,
-  MYSQL_DATABASE,
-  MYSQL_USER,
-  MYSQL_PASSWORD,
-  MYSQL_PORT,
+  POSTGRES_DATABASE,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_PORT,
   PHPMYADMIN_PORT,
   CACHE_TYPE,
   CACHE_HOST,
