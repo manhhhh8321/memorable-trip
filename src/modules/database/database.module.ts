@@ -7,12 +7,7 @@ import {
   POSTGRES_PORT,
   POSTGRES_PASSWORD,
   POSTGRES_USER,
-  CACHE_TYPE,
-  CACHE_HOST,
-  CACHE_PORT,
 } from 'src/environments';
-
-import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
@@ -27,7 +22,7 @@ import { User } from '../users/entities/user.entity';
           database: POSTGRES_DATABASE,
           // try autoload entities
           autoLoadEntities: true,
-          entities: [User],
+          entities: ['src/**/*.entity.{ts,js}'],
           // use cli and run schema:sync is better for secured data
           synchronize: true,
           // cache

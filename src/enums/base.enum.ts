@@ -6,3 +6,9 @@ export enum StatusEnum {
 export enum RequestHeadersEnum {
   Authorization = 'Authorization',
 }
+
+export enum GenderEnum {
+  Male = 'Male',
+  Female = 'Female',
+  Other = 'Other',
+}
