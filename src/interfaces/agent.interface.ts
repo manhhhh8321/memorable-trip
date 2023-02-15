@@ -1,6 +1,6 @@
 export interface IAgent {
   id: number;
-  agentId: number;
+  userId: number;
   cityId: number;
   propertyName: string;
   rating: number;

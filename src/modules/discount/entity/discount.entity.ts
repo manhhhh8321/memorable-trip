@@ -1,5 +1,6 @@
 import { BaseModel } from 'src/base/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Room } from 'src/modules/room/entity/room.entity';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Discount extends BaseModel {
@@ -19,4 +20,28 @@ export class Discount extends BaseModel {
     nullable: true,
   })
   dueDate: string;
+
+  @OneToMany((type) => RoomDiscount, (roomDiscount) => roomDiscount.discount, { cascade: true })
+  roomDiscount: RoomDiscount[];
+}
+
+@Entity()
+export class RoomDiscount {
+  @PrimaryColumn()
+  roomId: number;
+
+  @PrimaryColumn()
+  discountId: number;
+
+  @Column({
+    type: 'numeric',
+    nullable: false,
+  })
+  percentage: number;
+
+  @ManyToOne((type) => Room, (room) => room.id)
+  room: Room;
+
+  @ManyToOne((type) => Discount, (discount) => discount.id)
+  discount: Discount;
 }

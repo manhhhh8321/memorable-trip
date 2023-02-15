@@ -2,7 +2,6 @@ import { RoomType } from 'src/enums/user.enum';
 
 export interface IRoom {
   id: number;
-  ownerId: number;
   propertyId: number;
   roomType: RoomType;
   roomName: string;
@@ -10,4 +9,10 @@ export interface IRoom {
   roomSize: number;
   price: number;
   capacity: number;
+}
+
+export interface IRoomDiscount {
+  roomId: number;
+  discountId: number;
+  percents: number;
 }

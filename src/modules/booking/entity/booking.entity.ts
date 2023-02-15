@@ -1,6 +1,8 @@
 import { BaseModel } from 'src/base/base.entity';
 import { BookingStatusEnum, BookType } from 'src/enums/user.enum';
-import { Column, Entity } from 'typeorm';
+import { Payment } from 'src/modules/payment/entity/payment.entity';
+import { User } from 'src/modules/user/entity/user.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity()
 export class Booking extends BaseModel {
@@ -44,4 +46,11 @@ export class Booking extends BaseModel {
     nullable: true,
   })
   ref: string;
+
+  @ManyToOne((type) => User, (user) => user.booking, { cascade: true })
+  user: User;
+
+  @OneToOne(() => Payment)
+  @JoinColumn()
+  payment: Payment;
 }

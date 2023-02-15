@@ -1,5 +1,6 @@
 import { BaseModel } from 'src/base/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Room } from 'src/modules/room/entity/room.entity';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Amenities extends BaseModel {
@@ -19,4 +20,22 @@ export class Amenities extends BaseModel {
     nullable: true,
   })
   rate: number;
+
+  @OneToMany((type) => RoomAmenities, (roomAmenities) => roomAmenities.amenities, { cascade: true })
+  roomAmenities: RoomAmenities[];
+}
+
+@Entity()
+export class RoomAmenities {
+  @PrimaryColumn()
+  roomId: number;
+
+  @PrimaryColumn()
+  amenitiesId: number;
+
+  @ManyToOne((type) => Room, (room) => room.id)
+  room: Room;
+
+  @ManyToOne((type) => Amenities, (amenities) => amenities.id)
+  amenities: Amenities;
 }

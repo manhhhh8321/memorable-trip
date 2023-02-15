@@ -1,6 +1,5 @@
 export interface IDiscount {
   id: number;
-  roomId: number;
-  percentage: number;
+  name: string;
   dueDate: string;
 }
