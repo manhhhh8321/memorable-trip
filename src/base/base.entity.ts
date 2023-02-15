@@ -2,7 +2,7 @@ import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'type
 
 export abstract class BaseModel {
   @PrimaryGeneratedColumn('increment')
-  id: string;
+  id: number;
 
   @CreateDateColumn({
     name: 'created_at',
