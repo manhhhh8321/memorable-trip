@@ -1,7 +1,8 @@
 import { BaseModel } from 'src/base/base.entity';
 import { BookingStatusEnum, BookType } from 'src/enums/user.enum';
-import { Payment } from 'src/entities/payment.entity';
-import { User } from 'src/entities/user.entity';
+import { Payment } from 'src/entities/index';
+
+import { User } from 'src/entities/index';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity()

@@ -2,7 +2,7 @@ import { BaseModel } from 'src/base/base.entity';
 import { RoomType } from 'src/enums/user.enum';
 import { Agent } from 'src/entities/agent.entity';
 import { RoomAmenities } from 'src/entities/amenities.entity';
-import { Discount, RoomDiscount } from 'src/entities/discount.entity';
+import { Discount, RoomDiscount } from 'src/entities/index';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
