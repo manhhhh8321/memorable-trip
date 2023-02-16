@@ -4,21 +4,21 @@ import { ErrorHelper } from 'src/helpers/error.utils';
 import { TokenHelper } from 'src/helpers/token.helper';
 import { ConfigService } from 'src/shared/config/config.service';
 
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 
 import { LoginDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UsersService, private configService: ConfigService) {}
+  constructor(private userService: UserService, private configService: ConfigService) {}
 
   async login(params: LoginDto) {
     const { email, password } = params;
-    const user = await this.userService.findUserByEmail(email);
+    const user = await this.userService.findByEmail(email);
     if (!(await EncryptHelper.compare(password, user.password))) {
       ErrorHelper.BadRequestException('Wrong credentials');
     }
-    return this._generateToken(user.id);
+    return this._generateToken(user.id.toString());
   }
 
   async verifyUser(id: string) {
@@ -30,7 +30,7 @@ export class AuthService {
       id,
     };
     const secret = this.configService.accessTokenSecret;
-    const expiresIn = this.configService.accessTokenExpires;
+    const expiresIn = this.configService.accessTokenExpireMinutes;
     const { token: accessToken, expires } = TokenHelper.generate(payload, secret, expiresIn);
     const refreshToken = this._generateRefreshToken(id);
 

@@ -1,7 +1,8 @@
+import { PaymentType } from 'src/enums/user.enum';
+
 export interface IPayment {
   id: number;
-  bookingRef: string;
-  paymentType: string;
+  paymentType: PaymentType;
   status: string;
   completedAt: string;
 }

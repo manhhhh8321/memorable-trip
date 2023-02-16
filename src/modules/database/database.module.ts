@@ -1,42 +1,31 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import {
-  DATABASE_HOST,
-  DATABASE_TYPE,
-  POSTGRES_DATABASE,
-  POSTGRES_PORT,
-  POSTGRES_PASSWORD,
-  POSTGRES_USER,
-} from 'src/environments';
+import { ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: (): TypeOrmModuleOptions => {
+      imports: [],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
         return {
-          type: DATABASE_TYPE as any,
-          host: DATABASE_HOST,
-          port: POSTGRES_PORT,
-          username: POSTGRES_USER,
-          password: POSTGRES_PASSWORD,
-          database: POSTGRES_DATABASE,
-          // try autoload entities
-          autoLoadEntities: true,
-          entities: ['src/**/*.entity.{ts,js}'],
-          // use cli and run schema:sync is better for secured data
+          type: 'postgres',
+          host: configService.get<string>('POSTGRES_HOSTNAME'),
+          port: configService.get<number>('POSTGRES_PORT'),
+          username: configService.get<string>('POSTGRES_USERNAME'),
+          password: configService.get<string>('POSTGRES_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
+          // entities: [__dirname + '/../modules/**entities/*.entity{.ts,.js}'],
+          entities: [__dirname + '/../../entities/*.entity{.ts,.js}'],
           synchronize: true,
-          // cache
-          // cache: {
-          //   type: CACHE_TYPE as any,
-          //   options: {
-          //     host: CACHE_HOST,
-          //     port: CACHE_PORT,
-          //   },
-          //   ignoreErrors: true,
-          // },
-          //logging
-          logging: ['query', 'error'],
-          logger: 'file',
+          // ssl:
+          //   configService.get<string>('NODE_ENV') != 'local'
+          //     ? {
+          //         rejectUnauthorized: false,
+          //       }
+          //     : false,
+          ssl: false,
+          keepConnectionAlive: true,
         };
       },
     }),
