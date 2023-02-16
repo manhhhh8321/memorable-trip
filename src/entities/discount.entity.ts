@@ -1,5 +1,5 @@
 import { BaseModel } from 'src/base/base.entity';
-import { Room } from 'src/modules/room/entity/room.entity';
+import { Room } from 'src/entities/room.entity';
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()

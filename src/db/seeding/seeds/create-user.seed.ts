@@ -1,7 +1,7 @@
 import { Connection } from 'typeorm';
 import { Seeder, Factory } from 'typeorm-seeding';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
-import { User } from 'src/modules/user/entity/user.entity';
+import { User } from 'src/entities/user.entity';
 
 import userData from './data/users.json';
 

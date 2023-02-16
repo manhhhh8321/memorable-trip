@@ -2,17 +2,17 @@ import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'type
 
 export abstract class BaseModel {
   @PrimaryGeneratedColumn('increment')
-  id: number;
+  public id: number;
 
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
   })
-  createdAt: Date;
+  public createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
   })
-  updatedAt: Date;
+  public updatedAt: Date;
 }

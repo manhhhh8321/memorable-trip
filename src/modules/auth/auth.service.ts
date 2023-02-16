@@ -30,7 +30,7 @@ export class AuthService {
       id,
     };
     const secret = this.configService.accessTokenSecret;
-    const expiresIn = this.configService.accessTokenExpires;
+    const expiresIn = this.configService.accessTokenExpireMinutes;
     const { token: accessToken, expires } = TokenHelper.generate(payload, secret, expiresIn);
     const refreshToken = this._generateRefreshToken(id);
 

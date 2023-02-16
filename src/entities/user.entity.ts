@@ -1,8 +1,8 @@
 import { BaseModel } from 'src/base/base.entity';
 import { UserType } from 'src/enums/user.enum';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
-import { Agent } from 'src/modules/agent/entity/agent.entity';
-import { Booking } from 'src/modules/booking/entity/booking.entity';
+import { Agent } from 'src/entities/agent.entity';
+import { Booking } from 'src/entities/booking.entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 @Entity()
@@ -43,7 +43,7 @@ export class User extends BaseModel {
   @BeforeInsert()
   @BeforeUpdate()
   async hashing() {
-    await EncryptHelper.hash(this.password);
+    return await EncryptHelper.hash(this.password);
   }
 
   @OneToOne(() => Agent)
