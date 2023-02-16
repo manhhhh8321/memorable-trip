@@ -1,6 +1,5 @@
 import { BaseModel } from 'src/base/base.entity';
-import { Room } from 'src/entities/room.entity';
-import { User } from 'src/entities/user.entity';
+import { Room } from 'src/entities/index';
 import {
   Column,
   CreateDateColumn,
