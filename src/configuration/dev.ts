@@ -1,6 +1,9 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 export default () => ({
   app: {
-    baseUrlPrefix: '/api',
+    baseUrlPrefix: process.env.NODE_ENV === 'dev' ? process.env.APP_URL + '/api' : '/api',
     docsBaseUrl: '/docs',
   },
   accessToken: {
