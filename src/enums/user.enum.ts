@@ -7,7 +7,7 @@ export enum UserGenderEnum {
 export enum UserType {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
-  OWNER = 'OWNER',
+  AGENT = 'AGENT',
 }
 
 export enum RoomType {}

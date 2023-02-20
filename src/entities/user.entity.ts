@@ -3,7 +3,8 @@ import { UserType } from 'src/enums/user.enum';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
 import { Agent } from 'src/entities/agent.entity';
 import { Booking } from 'src/entities/booking.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User extends BaseModel {
@@ -15,6 +16,7 @@ export class User extends BaseModel {
   @Column({
     type: 'enum',
     enum: UserType,
+    default: UserType.CLIENT,
   })
   userType: UserType;
 
@@ -31,20 +33,29 @@ export class User extends BaseModel {
   })
   email: string;
 
-  @Column()
+  @Column({
+    type: 'text',
+    nullable: false,
+    unique: true,
+  })
   phone: string;
 
   @Column()
   gender: string;
 
+  @Exclude()
   @Column()
   password: string;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashing() {
-    return await EncryptHelper.hash(this.password);
-  }
+  // @BeforeInsert()
+  // @BeforeUpdate()
+  // async hashing() {
+  //   try {
+  //     this.password = await EncryptHelper.hash(this.password, 10);
+  //   } catch (e) {
+  //     throw new Error('Error Encrypting Password');
+  //   }
+  // }
 
   @OneToOne(() => Agent)
   @JoinColumn()
