@@ -30,17 +30,15 @@ export class AuthGuard implements CanActivate {
     if (!apiPermissions || !apiPermissions.length) {
       return true;
     }
-    const { userType, permissions } = user;
+    const { userType } = user;
     const rolePermission = apiPermissions.find((p) => p.userType === userType);
 
-    return this.checkPermission(permissions, rolePermission);
+    return this.checkPermission(rolePermission);
   }
 
-  checkPermission(userPermissions: string[], rolePermission: IAuthPermission): boolean {
+  checkPermission(rolePermission: IAuthPermission): boolean {
     if (!rolePermission) return false;
-    if (rolePermission.permission) {
-      return userPermissions.includes(rolePermission.permission);
-    }
+
     return true;
   }
 
@@ -48,7 +46,7 @@ export class AuthGuard implements CanActivate {
     const [bearer, accessToken] = authorization.split(' ');
     if (bearer == 'Bearer' && accessToken != '') {
       const payload = TokenHelper.verify<IGenerateJWT>(accessToken, this.configService.accessTokenSecret);
-      const user = await this.authService.verifyUser(payload.id);
+      const user = await this.authService.verifyUser(parseInt(payload.id));
       if (!user) {
         ErrorHelper.UnauthorizedException('Unauthorized Exception');
       }

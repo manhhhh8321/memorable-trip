@@ -21,7 +21,7 @@ export class AuthService {
     return this._generateToken(user.id.toString());
   }
 
-  async verifyUser(id: string) {
+  async verifyUser(id: number) {
     return this.userService.findById(id);
   }
 

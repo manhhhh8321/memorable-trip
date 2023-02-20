@@ -29,7 +29,7 @@ export class BaseRepository<Model extends BaseModel> extends EventEmitter {
     return classToPlain(await this.model.save(entities)) as any;
   }
 
-  async findById(id: string, opts?: FindOneOptions<Model>): Promise<Model> {
+  async findById(id: number, opts?: FindOneOptions<Model>): Promise<Model> {
     return classToPlain(await this.findOne({ where: { id }, ...opts })) as any;
   }
 
