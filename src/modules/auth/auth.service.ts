@@ -15,7 +15,6 @@ export class AuthService {
   async login(params: LoginDto) {
     const { email, password } = params;
     const user = await this.userService.findByEmail(email);
-    console.log(user);
     if (!(await EncryptHelper.compare(password, user.password))) {
       ErrorHelper.BadRequestException('Wrong credentials');
     }
