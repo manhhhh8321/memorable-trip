@@ -1,6 +1,8 @@
 import { Controller, Post, Body, Res, Get } from '@nestjs/common';
 import { Response } from 'express';
 import { ResponseMessage } from 'src/common/decorators/user.decorator';
+import { MailPayload } from '../mail/dto/mail.dto';
+import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
 
@@ -9,7 +11,11 @@ import { LoginDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+    private readonly mailService: MailService,
+  ) {}
 
   @Get('ping')
   async ping() {
@@ -36,4 +42,13 @@ export class AuthController {
       message: 'Register successfully',
     };
   }
+
+  // @Post('verify')
+  // async verify(@Body() payload: MailPayload) {
+  //   const result = await this.mailService.sendMail(payload);
+  //   return {
+  //     result,
+  //     message: 'Email sent successfully',
+  //   };
+  // }
 }

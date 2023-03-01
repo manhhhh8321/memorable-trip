@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { USER_MESSAGE } from 'src/constants/message.constant';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import { TokenHelper } from 'src/helpers/token.helper';
 import { ConfigService } from 'src/shared/config/config.service';
+import { RedisService } from '../redis/redis.service';
 
 import { UserService } from '../user/user.service';
 
@@ -10,7 +12,11 @@ import { LoginDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService, private configService: ConfigService) {}
+  constructor(
+    private userService: UserService,
+    private configService: ConfigService,
+    private readonly redisService: RedisService,
+  ) {}
 
   async login(params: LoginDto) {
     const { email, password } = params;
@@ -43,5 +49,20 @@ export class AuthService {
 
   private _generateRefreshToken(id: string) {
     return `refresh-token-${id}`;
+  }
+
+  async sendUserVerificationEmail(email: string) {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const randNumber = Math.floor(Math.random() * 1000000);
+
+    const payload = {
+      id: user.id,
+      randNumber,
+    };
   }
 }

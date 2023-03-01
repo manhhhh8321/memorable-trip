@@ -10,13 +10,13 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post()
   @UseGuards(AuthGuard)
   @Auth([
     {
       userType: UserType.ADMIN,
     },
   ])
-  @Post()
   @HttpCode(201)
   async createUser(@Body() payload: CreateUserDto) {
     return await this.userService.createUser(payload);
