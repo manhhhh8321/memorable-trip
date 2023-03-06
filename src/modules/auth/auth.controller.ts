@@ -1,13 +1,16 @@
-import { Controller, Post, Body, Res, Get } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, HttpCode } from '@nestjs/common';
 import { Response } from 'express';
 import { ResponseMessage } from 'src/common/decorators/user.decorator';
+import { MAIL_MESSAGE, USER_MESSAGE } from 'src/constants/message.constant';
+import { ErrorHelper } from 'src/helpers/error.utils';
+import { DeepPartial } from 'typeorm';
 import { MailPayload } from '../mail/dto/mail.dto';
 import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
 
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/auth.dto';
+import { LoginDto, VerifyPayload } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -41,6 +44,49 @@ export class AuthController {
       result,
       message: 'Register successfully',
     };
+  }
+
+  @Post('verify')
+  async verify(@Body() payload: VerifyPayload) {
+    const { email, code } = payload;
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      return {
+        message: USER_MESSAGE.USER_NOT_FOUND,
+      };
+    }
+
+    const verify = await this.authService.verifyUserEmail(user.id, code);
+
+    if (verify) {
+      try {
+        await this.userService.update(user.id, { isVerified: true });
+
+        return {
+          message: MAIL_MESSAGE.VERIFIED_EMAIL_SUCCESSFULLY,
+        };
+      } catch (err) {
+        ErrorHelper.InternalServerErrorException(err);
+      }
+    }
+
+    return {
+      message: MAIL_MESSAGE.SEND_MAIL_FAILED,
+    };
+  }
+
+  @Post('send-verify-email')
+  @HttpCode(200)
+  async sendVerifyEmail(@Body('email') email: string) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      return {
+        message: USER_MESSAGE.USER_NOT_FOUND,
+      };
+    }
+
+    return await this.authService.sendUserVerificationEmail(email);
   }
 
   // @Post('verify')

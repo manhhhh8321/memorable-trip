@@ -9,8 +9,8 @@ export class RedisService {
     return await this.redisClient.get(key);
   }
 
-  async set(key: string, value: string) {
-    return await this.redisClient.set(key, value);
+  async set(key: string, value: string, expiresIn?: number) {
+    return await this.redisClient.set(key, value, 'EX', expiresIn);
   }
 
   async del(key: string) {

@@ -3,6 +3,7 @@ import { ErrorHelper } from 'src/helpers/error.utils';
 import { MailPayload } from './dto/mail.dto';
 import * as nodemailer from 'nodemailer';
 import * as dotenv from 'dotenv';
+import { MAIL_MESSAGE } from 'src/constants/message.constant';
 dotenv.config();
 
 @Injectable()
@@ -26,12 +27,12 @@ export class MailService {
       let info = await transporter.sendMail({
         from: 'no-reply@example.com',
         to: payload.email,
-        subject: 'Email Verification',
-        html: `<h1>Hi ${payload.email}</h1>`,
+        subject: payload.subject,
+        html: `<h1>Hi ${payload.content}</h1>`,
       });
 
       if (!info.messageId) {
-        ErrorHelper.BadRequestException('Email not sent');
+        ErrorHelper.BadRequestException(MAIL_MESSAGE.SEND_MAIL_FAILED);
       }
 
       console.log(info.messageId);
