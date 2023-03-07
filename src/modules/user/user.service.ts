@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { USER_MESSAGE } from 'src/constants/message.constant';
+import { User } from 'src/entities';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
 import { ErrorHelper } from 'src/helpers/error.utils';
+import { DeepPartial } from 'typeorm';
+import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/user.dto';
 import { UsersRepository } from './user.repository';
 
@@ -46,4 +49,10 @@ export class UserService {
 
     return await this.userRepo.create(payload);
   }
+
+  async update(id: number, payload: DeepPartial<User>) {
+    return await this.userRepo.update(id, payload);
+  }
+
+  async verifyToCreateUser(randNumber: number) {}
 }

@@ -3,8 +3,9 @@ import { UserType } from 'src/enums/user.enum';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
 import { Agent } from 'src/entities/agent.entity';
 import { Booking } from 'src/entities/booking.entity';
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { GenderEnum } from 'src/enums/base.enum';
 
 @Entity()
 export class User extends BaseModel {
@@ -46,6 +47,12 @@ export class User extends BaseModel {
   @Exclude()
   @Column()
   password: string;
+
+  @Column({
+    default: false,
+    type: 'boolean',
+  })
+  isVerified: boolean;
 
   // @BeforeInsert()
   // @BeforeUpdate()

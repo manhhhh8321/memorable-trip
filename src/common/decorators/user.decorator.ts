@@ -7,3 +7,8 @@ export const User = createParamDecorator<any, any, IUser>((data: string, ctx: Ex
 
   return data ? user?.[data] : user;
 });
+
+export const ResponseMessage = createParamDecorator<any, any, Response>((data: string, ctx: ExecutionContext) => {
+  const response = ctx.switchToHttp().getResponse();
+  return data ? response?.[data] : response;
+});

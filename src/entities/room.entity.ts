@@ -2,7 +2,7 @@ import { BaseModel } from 'src/base/base.entity';
 import { RoomType } from 'src/enums/user.enum';
 import { Agent } from 'src/entities/agent.entity';
 import { RoomAmenities } from 'src/entities/amenities.entity';
-import { Discount, RoomDiscount } from 'src/entities/index';
+import { Discount, RoomDiscount, Image } from 'src/entities/index';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
@@ -44,4 +44,7 @@ export class Room extends BaseModel {
 
   @OneToMany((type) => RoomAmenities, (roomAmenities) => roomAmenities.amenities, { cascade: true })
   roomAmenities: RoomAmenities[];
+
+  @OneToMany((type) => Image, (image) => image.room, { cascade: true })
+  image: Image[];
 }

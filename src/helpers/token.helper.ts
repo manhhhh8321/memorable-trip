@@ -1,4 +1,5 @@
 import * as jwt from 'jsonwebtoken';
+import jwtDecode from 'jwt-decode';
 
 import { ErrorHelper } from './error.utils';
 
@@ -24,7 +25,7 @@ export class TokenHelper {
     const token = jwt.sign(payload, secret, {
       expiresIn,
     });
-    const decoded = jwt.decode(token) as jwt.JwtPayload;
+    const decoded = jwtDecode(token) as jwt.JwtPayload;
     return {
       token,
       expires: decoded.iat,
