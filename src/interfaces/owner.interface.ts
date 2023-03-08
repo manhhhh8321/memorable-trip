@@ -1,8 +1,7 @@
-export interface IAgent {
+export interface IOwner {
   id: number;
   userId: number;
   cityId: number;
-  propertyName: string;
   rating: number;
   description: string;
   addressLine: string;

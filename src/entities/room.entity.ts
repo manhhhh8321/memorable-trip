@@ -1,6 +1,6 @@
 import { BaseModel } from 'src/base/base.entity';
 import { RoomType } from 'src/enums/user.enum';
-import { Agent } from 'src/entities/agent.entity';
+import { City, Owner } from 'src/entities/owner.entity';
 import { RoomAmenities } from 'src/entities/amenities.entity';
 import { Discount, RoomDiscount, Image } from 'src/entities/index';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
@@ -36,8 +36,8 @@ export class Room extends BaseModel {
   @Column('numeric')
   price: number;
 
-  @ManyToOne((types) => Agent, (agent) => agent.room)
-  agent: Agent;
+  @ManyToOne((types) => Owner, (owner) => owner.room)
+  owner: Owner;
 
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   roomDiscount: RoomDiscount[];
@@ -47,4 +47,7 @@ export class Room extends BaseModel {
 
   @OneToMany((type) => Image, (image) => image.room, { cascade: true })
   image: Image[];
+
+  @ManyToOne((type) => City, (city) => city.room)
+  city: City;
 }

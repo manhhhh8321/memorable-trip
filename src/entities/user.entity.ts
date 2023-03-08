@@ -1,7 +1,7 @@
 import { BaseModel } from 'src/base/base.entity';
 import { UserType } from 'src/enums/user.enum';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
-import { Agent } from 'src/entities/agent.entity';
+import { Owner } from 'src/entities/owner.entity';
 import { Booking } from 'src/entities/booking.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
@@ -64,9 +64,9 @@ export class User extends BaseModel {
   //   }
   // }
 
-  @OneToOne(() => Agent)
+  @OneToOne(() => Owner)
   @JoinColumn()
-  agent: Agent;
+  owner: Owner;
 
   @OneToMany((type) => Booking, (booking) => booking.user)
   booking: Booking[];

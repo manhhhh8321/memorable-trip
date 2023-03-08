@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Res, Get, HttpCode } from '@nestjs/common';
 import { Response } from 'express';
 import { ResponseMessage } from 'src/common/decorators/user.decorator';
+import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { MAIL_MESSAGE, USER_MESSAGE } from 'src/constants/message.constant';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import { DeepPartial } from 'typeorm';
@@ -10,7 +11,7 @@ import { CreateUserDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
 
 import { AuthService } from './auth.service';
-import { LoginDto, VerifyPayload } from './dto/auth.dto';
+import { LoginDto, PhoneLoginDto, VerifyPayload } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -89,12 +90,30 @@ export class AuthController {
     return await this.authService.sendUserVerificationEmail(email);
   }
 
-  // @Post('verify')
-  // async verify(@Body() payload: MailPayload) {
-  //   const result = await this.mailService.sendMail(payload);
-  //   return {
-  //     result,
-  //     message: 'Email sent successfully',
-  //   };
-  // }
+  @Post('send-otp')
+  async sendOTP(@Body('phone') phone: string) {
+    const user = await this.userService.findByPhone(phone);
+    if (!user) {
+      return {
+        message: USER_MESSAGE.USER_NOT_FOUND,
+      };
+    }
+
+    return await this.authService.sendOTP(phone);
+  }
+
+  @Post('login-otp')
+  async loginOTP(@Body() payload: PhoneLoginDto, @Res() res: Response) {
+    const { accessToken, refreshToken, expires } = await this.authService.loginWithOTP(payload);
+    res.cookie('JWT', 'Bearer ' + accessToken, {
+      maxAge: expires,
+      httpOnly: true,
+    });
+    res.json({ accessToken, refreshToken });
+    return {
+      message: 'Login successfully',
+      accessToken,
+      refreshToken,
+    };
+  }
 }

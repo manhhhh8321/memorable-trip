@@ -13,31 +13,11 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Agent extends BaseModel {
-  constructor(partial: Partial<Agent>) {
+export class Owner extends BaseModel {
+  constructor(partial: Partial<Owner>) {
     super();
     Object.assign(this, partial);
   }
-
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamp',
-  })
-  updatedAt: Date;
-
-  @Column({
-    type: 'text',
-  })
-  propertyName: string;
 
   @Column({
     type: 'int',
@@ -57,10 +37,7 @@ export class Agent extends BaseModel {
   })
   addressLine: string;
 
-  @ManyToOne((types) => City, (city) => city.agent)
-  city: Relation<City>;
-
-  @OneToMany((types) => Room, (room) => room.agent, { cascade: true })
+  @OneToMany((types) => Room, (room) => room.owner, { cascade: true })
   room: Array<Room>;
 }
 
@@ -77,6 +54,6 @@ export class City extends BaseModel {
   @Column('text')
   postCode: string;
 
-  @OneToMany((types) => Agent, (agent) => agent.city, { cascade: true })
-  agent: Array<Agent>;
+  @OneToMany((types) => Room, (room) => room.city, { cascade: true })
+  room: Array<Room>;
 }

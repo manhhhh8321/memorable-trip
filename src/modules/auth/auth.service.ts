@@ -9,8 +9,18 @@ import { MailService } from '../mail/mail.service';
 
 import { UserService } from '../user/user.service';
 
-import { LoginDto } from './dto/auth.dto';
+import { LoginDto, PhoneLoginDto } from './dto/auth.dto';
 import { MailPayload } from '../mail/dto/mail.dto';
+
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+import twilio = require('twilio');
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
+const GLOBAL_SERVICE = process.env.TWILIO_SERVICE_SID;
 
 @Injectable()
 export class AuthService {
@@ -101,5 +111,47 @@ export class AuthService {
     }
 
     return true;
+  }
+
+  // Twilio auth
+  async sendOTP(phoneNumber: string) {
+    const user = await this.userService.findByPhone(phoneNumber);
+
+    if (!user) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.USER_NOT_FOUND);
+    }
+
+    try {
+      await client.verify.v2.services(GLOBAL_SERVICE).verifications.create({ to: phoneNumber, channel: 'sms' });
+    } catch (err) {
+      ErrorHelper.BadRequestException(err.message);
+    }
+
+    return {
+      message: 'Verification code sent to your phone number',
+    };
+  }
+
+  async loginWithOTP(phoneLoginDto: PhoneLoginDto) {
+    const { phone, code } = phoneLoginDto;
+    try {
+      const verifyOTP = await client.verify.v2
+        .services(GLOBAL_SERVICE)
+        .verificationChecks.create({ to: phone, code: code });
+
+      if (verifyOTP.status !== 'approved') {
+        ErrorHelper.BadRequestException('Wrong credentials');
+      }
+    } catch (err) {
+      ErrorHelper.BadRequestException(err);
+    }
+
+    const user = await this.userService.findByPhone(phone);
+
+    if (!user) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.USER_NOT_FOUND);
+    }
+
+    return this._generateToken(user.id.toString());
   }
 }
