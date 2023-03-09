@@ -1,9 +1,9 @@
 import { BaseModel } from 'src/base/base.entity';
 import { RoomType } from 'src/enums/user.enum';
-import { City, Owner } from 'src/entities/owner.entity';
+import { City } from 'src/entities/city.entity';
 import { RoomAmenities } from 'src/entities/amenities.entity';
-import { Discount, RoomDiscount, Image } from 'src/entities/index';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Discount, RoomDiscount, Image, Description, User } from 'src/entities/index';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class Room extends BaseModel {
@@ -36,9 +36,6 @@ export class Room extends BaseModel {
   @Column('numeric')
   price: number;
 
-  @ManyToOne((types) => Owner, (owner) => owner.room)
-  owner: Owner;
-
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   roomDiscount: RoomDiscount[];
 
@@ -50,4 +47,11 @@ export class Room extends BaseModel {
 
   @ManyToOne((type) => City, (city) => city.room)
   city: City;
+
+  @ManyToOne((type) => Description, (description) => description.room)
+  description: Description;
+
+  @ManyToOne((type) => User, (user) => user.room)
+  @JoinColumn({ name: 'ownerId' })
+  user: User;
 }

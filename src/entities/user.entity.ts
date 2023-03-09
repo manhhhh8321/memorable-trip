@@ -1,11 +1,11 @@
 import { BaseModel } from 'src/base/base.entity';
 import { UserType } from 'src/enums/user.enum';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
-import { Owner } from 'src/entities/owner.entity';
 import { Booking } from 'src/entities/booking.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { GenderEnum } from 'src/enums/base.enum';
+import { Room } from './room.entity';
 
 @Entity()
 export class User extends BaseModel {
@@ -64,10 +64,9 @@ export class User extends BaseModel {
   //   }
   // }
 
-  @OneToOne(() => Owner)
-  @JoinColumn()
-  owner: Owner;
-
   @OneToMany((type) => Booking, (booking) => booking.user)
   booking: Booking[];
+
+  @OneToMany((type) => Room, (room) => room.user)
+  room: Room[];
 }

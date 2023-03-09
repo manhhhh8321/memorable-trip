@@ -7,10 +7,14 @@ export enum UserGenderEnum {
 export enum UserType {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
-  AGENT = 'AGENT',
+  OWNER = 'OWNER',
 }
 
-export enum RoomType {}
+export enum RoomType {
+  ROOM = 'ROOM',
+  ENTIRE_HOME = 'ENTIRE_HOME',
+  SHARED_ROOM = 'SHARED_ROOM',
+}
 
 export enum BookType {}
 

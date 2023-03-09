@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { IsEmail, IsEnum, IsIn, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
 import { GenderEnum } from 'src/enums/base.enum';
 import { UserType } from 'src/enums/user.enum';
@@ -30,3 +31,5 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 }
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}

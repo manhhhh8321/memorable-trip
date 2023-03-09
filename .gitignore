@@ -37,3 +37,4 @@ lerna-debug.log*
 # DB
 volumes
 .env
+src/common/air-bnb-listings.json
