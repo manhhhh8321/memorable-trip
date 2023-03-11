@@ -8,6 +8,10 @@ export interface IRoom {
   isAvailable: boolean;
   roomSize: number;
   price: number;
+  numberOfLivingRoom: number;
+  numberOfBedroom: number;
+  numberOfBathroom: number;
+  numberOfBed: number;
 }
 
 export interface IRoomDiscount {

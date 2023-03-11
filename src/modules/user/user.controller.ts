@@ -51,4 +51,9 @@ export class UserController {
     const userId = req.user.id;
     return await this.userService.updateUser(userId, payload);
   }
+
+  @Get('/seed')
+  async seed() {
+    return await this.userService.seedUser();
+  }
 }

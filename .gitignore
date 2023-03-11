@@ -38,3 +38,5 @@ lerna-debug.log*
 volumes
 .env
 src/common/air-bnb-listings.json
+src/common/MOCK_DATA (1).json
+src/common/MOCK_DATA (2).ts

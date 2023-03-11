@@ -16,6 +16,13 @@ export class Description extends BaseModel {
   })
   name: string;
 
+  @Column({
+    type: 'text',
+    nullable: true,
+    unique: true,
+  })
+  icon: string;
+
   @OneToMany((types) => Room, (room) => room.description, { cascade: true })
   room: Array<Room>;
 }
