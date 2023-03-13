@@ -6,8 +6,10 @@ import { DatabaseModule } from './modules/database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { RedisModuleCache } from './modules/redis/redis.module';
 import { RoomModule } from './modules/room/room.module';
+import { AmenitiesModule } from './modules/amenities/amenities.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 
 @Module({
-  imports: [AuthModule, ConfigModule, DatabaseModule, RoomModule],
+  imports: [AuthModule, ConfigModule, DatabaseModule, RoomModule, AmenitiesModule, CloudinaryModule],
 })
 export class AppModule {}

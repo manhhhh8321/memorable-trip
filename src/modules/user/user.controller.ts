@@ -29,7 +29,7 @@ export class UserController {
       userType: UserType.CLIENT,
     },
     {
-      userType: UserType.CLIENT,
+      userType: UserType.OWNER,
     },
   ])
   async findById(@Req() req: any) {
