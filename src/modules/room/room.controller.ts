@@ -10,4 +10,9 @@ export class RoomController {
   async seed() {
     return await this.descriptionService.seedDescription();
   }
+
+  @Get('seedCity')
+  async seedCity() {
+    return await this.roomService.seedCity();
+  }
 }

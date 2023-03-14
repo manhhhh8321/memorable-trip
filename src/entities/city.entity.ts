@@ -10,10 +10,10 @@ export class City extends BaseModel {
   }
 
   @Column('text')
-  cityName: string;
+  name: string;
 
   @Column('text')
-  postCode: string;
+  code: string;
 
   @OneToMany((types) => Room, (room) => room.city, { cascade: true })
   room: Array<Room>;

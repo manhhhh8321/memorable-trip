@@ -1,5 +1,5 @@
 export interface CloudinaryConfig {
-  cloudName: string;
-  apiKey: string;
-  apiSecret: string;
+  cloud_name: string;
+  api_key: string;
+  api_secret: string;
 }
