@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { DescriptionService } from '../description/description.service';
+import { RoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
 
 @Controller('room')
@@ -14,5 +15,15 @@ export class RoomController {
   @Get('seedCity')
   async seedCity() {
     return await this.roomService.seedCity();
+  }
+
+  // @Get('seedRoom')
+  // async seedRoom() {
+  //   return await this.roomService.seedRoom();
+  // }
+
+  @Post('')
+  async create(@Body() payload: RoomDto) {
+    return await this.roomService.create(payload);
   }
 }

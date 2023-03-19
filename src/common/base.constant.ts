@@ -79,7 +79,7 @@ export const PROVINCES = [
   { code: '50', name: 'Tra Vinh' },
 ];
 
-const VALID_PROVINCES_CODE = [
+export const VALID_PROVINCES_CODE = [
   'Lai Chau',
   'Lao Cai',
   'Ha Giang',

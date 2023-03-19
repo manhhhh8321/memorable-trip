@@ -9,10 +9,16 @@ export class City extends BaseModel {
     Object.assign(this, partial);
   }
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
   name: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
   code: string;
 
   @OneToMany((types) => Room, (room) => room.city, { cascade: true })

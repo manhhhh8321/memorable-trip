@@ -86,4 +86,20 @@ export class AmenitiesService {
 
     return 'Amenity deleted successfully';
   }
+
+  async findByNames(names: string[]) {
+    const qb = this.amenitiesRepo.createQueryBuilder('amenities');
+
+    qb.where('amenities.name IN (:...names)', { names });
+
+    return await qb.getMany();
+  }
+
+  async findByName(name: string) {
+    return await this.amenitiesRepo.findOne({
+      where: {
+        name,
+      },
+    });
+  }
 }

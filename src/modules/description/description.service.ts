@@ -17,4 +17,8 @@ export class DescriptionService {
 
     return 'Seed description success';
   }
+
+  async findByName(name: string) {
+    return await this.descriptionRepo.findOne({ name });
+  }
 }

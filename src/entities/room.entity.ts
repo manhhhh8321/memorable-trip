@@ -14,7 +14,8 @@ export class Room extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: RoomType,
+    enum: ['ROOM', 'ENTIRE_HOME', 'SHARED_ROOM`'],
+    enumName: 'room_type',
   })
   roomType: RoomType;
 
@@ -24,17 +25,30 @@ export class Room extends BaseModel {
   @Column({
     type: 'boolean',
     nullable: true,
+    default: true,
   })
   isAvailable: boolean;
 
-  @Column({
-    type: 'numeric',
-    nullable: true,
-  })
-  roomSize: number;
-
   @Column('numeric')
   price: number;
+
+  @Column('text')
+  about: string;
+
+  @Column('int')
+  numberOfLivingRoom: number;
+
+  @Column('int')
+  numberOfBedroom: number;
+
+  @Column('int')
+  numberOfBed: number;
+
+  @Column('int')
+  numberOfBathroom: number;
+
+  @Column('text')
+  address: string;
 
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   roomDiscount: RoomDiscount[];
