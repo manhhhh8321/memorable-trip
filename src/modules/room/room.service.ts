@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { PROVINCES } from 'src/common/base.constant';
-import { AMENITIES_MESSAGE, CITY_MESSAGE, DESCRIPTION_MESSAGE, USER_MESSAGE } from 'src/constants/message.constant';
+import {
+  AMENITIES_MESSAGE,
+  CITY_MESSAGE,
+  DESCRIPTION_MESSAGE,
+  ROOM_MESSAGE,
+  USER_MESSAGE,
+} from 'src/constants/message.constant';
 import { Room, RoomAmenities } from 'src/entities';
 import { City } from 'src/entities/city.entity';
 import { ErrorHelper } from 'src/helpers/error.utils';
-import { Repository } from 'typeorm';
+import { FindConditions, Repository } from 'typeorm';
 import { AmenitiesService } from '../amenities/amenities.service';
 import { DescriptionService } from '../description/description.service';
 import { UserService } from '../user/user.service';
-import { RoomDto } from './dto/room.dto';
+import { RoomDto, UpdateRoomDto } from './dto/room.dto';
 import { generateFakeRoomDto } from './faker/room.faker';
 import { RoomsRepository } from './room.repository';
 @Injectable()
@@ -21,6 +28,7 @@ export class RoomService {
     private readonly descriptionService: DescriptionService,
     private userService: UserService,
     @InjectRepository(RoomAmenities) private readonly roomAmenitiesRepo: Repository<RoomAmenities>,
+    @InjectRepository(Room) private readonly roomEntityRepo: Repository<Room>,
   ) {}
 
   async seedCity() {
@@ -113,4 +121,58 @@ export class RoomService {
   //     await this.create(r);
   //   }
   // }
+
+  async getAll(options: IPaginationOptions, searchCriteria?: FindConditions<Room>) {
+    const room = await this.roomRepo.paginationRepository(this.roomEntityRepo, options);
+
+    return room;
+  }
+
+  async findById(id: number) {
+    const room = await this.roomRepo.findOne({
+      where: { id },
+    });
+
+    if (!room) {
+      ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_FOUND);
+    }
+
+    return room;
+  }
+
+  async updateRoom(id: number, payload: UpdateRoomDto, ownerId?: number) {
+    const { ...rest } = payload;
+
+    const room = await this.roomRepo.findOne({
+      where: { id },
+    });
+
+    if (!room) {
+      ErrorHelper.BadRequestException(AMENITIES_MESSAGE.GET.NOT_FOUND);
+    }
+
+    if (ownerId && room.user.id !== ownerId) {
+      ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_OWNER);
+    }
+
+    const updatedRoom = Object.assign(room, rest);
+
+    return this.roomRepo.updateItem(updatedRoom);
+  }
+
+  async deleteRoom(id: number, ownerId?: number) {
+    const room = await this.roomRepo.findOne({
+      where: { id },
+    });
+
+    if (!room) {
+      ErrorHelper.BadRequestException(AMENITIES_MESSAGE.GET.NOT_FOUND);
+    }
+
+    if (ownerId && room.user.id !== ownerId) {
+      ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_OWNER);
+    }
+
+    return this.roomRepo.removeItem(room);
+  }
 }

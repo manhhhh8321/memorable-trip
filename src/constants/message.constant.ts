@@ -29,3 +29,10 @@ export const AMENITIES_MESSAGE = {
     NOT_FOUND: 'AMENITIES_NOT_FOUND',
   },
 };
+
+export const ROOM_MESSAGE = {
+  GET: {
+    NOT_FOUND: 'ROOM_NOT_FOUND',
+    NOT_OWNER: 'You do not own this room!',
+  },
+};

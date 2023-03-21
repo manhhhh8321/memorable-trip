@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import {
   ArrayMinSize,
   IsArray,
@@ -22,6 +23,70 @@ export class RoomDto {
   @IsNotEmpty()
   @IsNumber()
   userId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
+  price: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
+  numberOfLivingRoom: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
+  numberOfBedroom: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
+  numberOfBed: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
+  numberOfBathroom: number;
+
+  @IsNotEmpty()
+  @IsEnum(RoomType)
+  roomType: RoomType;
+
+  @IsNotEmpty()
+  @IsString()
+  about: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(DESCRIPTION)
+  description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(VALID_PROVINCES_CODE)
+  city: string;
+
+  @IsArray()
+  @IsNotEmpty()
+  @IsIn(AMENITIES, { each: true })
+  amenities: string[];
+
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayMinSize(3)
+  image: string[];
+
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+}
+
+export class UpdateRoomDto {
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(255)
+  roomName: string;
 
   @IsNotEmpty()
   @IsNumber()
