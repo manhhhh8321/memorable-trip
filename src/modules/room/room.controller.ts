@@ -17,6 +17,16 @@ export class RoomController {
     private readonly userService: UserService,
   ) {}
 
+  @Get('seedCity')
+  async seedCity() {
+    return await this.roomService.seedCity();
+  }
+
+  @Get('seedDescription')
+  async seed() {
+    return await this.descriptionService.seedDescription();
+  }
+
   @Get('')
   @UseGuards(AuthGuard)
   @Auth([
@@ -46,16 +56,6 @@ export class RoomController {
   ])
   async getById(@Param('id', new ParseIntPipe()) id: number) {
     return await this.roomService.findById(id);
-  }
-
-  @Get('seedDescription')
-  async seed() {
-    return await this.descriptionService.seedDescription();
-  }
-
-  @Get('seedCity')
-  async seedCity() {
-    return await this.roomService.seedCity();
   }
 
   // @Get('seedRoom')

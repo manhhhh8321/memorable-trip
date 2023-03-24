@@ -14,7 +14,7 @@ export class Room extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: ['ROOM', 'ENTIRE_HOME', 'SHARED_ROOM`'],
+    enum: ['ROOM', 'ENTIRE_HOME', 'SHARED_ROOM'],
     enumName: 'room_type',
   })
   roomType: RoomType;

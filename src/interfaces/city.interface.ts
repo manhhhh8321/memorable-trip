@@ -1,5 +1,5 @@
 export interface ICity {
   id: number;
-  cityName: string;
-  postCode: string;
+  name: string;
+  code: string;
 }

@@ -8,7 +8,7 @@ import { DeepPartial } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/user.dto';
 import { UsersRepository } from './user.repository';
-import { MockUser } from 'src/common/MOCK_DATA (2)';
+// import { MockUser } from 'src/common/MOCK_DATA (2)';
 
 @Injectable()
 export class UserService {
@@ -99,16 +99,16 @@ export class UserService {
     await this.userRepo.removeItem(id);
   }
 
-  async seedUser() {
-    MockUser.forEach(async (user) => {
-      const randomPassword = Math.random().toString(36).slice(-8);
-      await this.createUser({
-        ...user,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        password: randomPassword,
-      });
-    });
-    return 'Seed user success';
-  }
+  // async seedUser() {
+  //   MockUser.forEach(async (user) => {
+  //     const randomPassword = Math.random().toString(36).slice(-8);
+  //     await this.createUser({
+  //       ...user,
+  //       firstName: user.first_name,
+  //       lastName: user.last_name,
+  //       password: randomPassword,
+  //     });
+  //   });
+  //   return 'Seed user success';
+  // }
 }

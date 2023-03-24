@@ -19,7 +19,11 @@ import twilio = require('twilio');
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = twilio(accountSid, authToken);
+let client = null;
+if (accountSid || authToken) {
+  client = twilio(accountSid, authToken);
+}
+
 const GLOBAL_SERVICE = process.env.TWILIO_SERVICE_SID;
 
 @Injectable()

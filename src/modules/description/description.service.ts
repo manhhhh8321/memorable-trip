@@ -12,7 +12,9 @@ export class DescriptionService {
     const description = DESCRIPTION;
 
     for (let d of description) {
-      await this.descriptionRepo.create({ name: d });
+      const des = this.descriptionRepo.create({ name: d });
+
+      await this.descriptionRepo.save(des);
     }
 
     return 'Seed description success';
