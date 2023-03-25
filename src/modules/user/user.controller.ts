@@ -52,8 +52,8 @@ export class UserController {
     return await this.userService.updateUser(userId, payload);
   }
 
-  @Get('/seed')
-  async seed() {
-    return await this.userService.seedUser();
-  }
+  // @Get('/seed')
+  // async seed() {
+  //   return await this.userService.seedUser();
+  // }
 }

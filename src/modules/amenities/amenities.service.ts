@@ -28,14 +28,14 @@ export class AmenitiesService {
       '<i class="fa-solid fa-fire"></i>',
       '<i class="fa-solid fa-bicycle"></i>',
     ];
-
-    amenities.forEach((item) => {
+    amenities.forEach(async (item) => {
       const amenity = new Amenities({
         name: item,
         icon: icon[amenities.indexOf(item)],
         rate: Math.floor(Math.random() * 10),
       });
       this.amenitiesRepo.create(amenity);
+      await this.amenitiesRepo.save(amenity);
     });
 
     return 'Amenities seeded successfully';
