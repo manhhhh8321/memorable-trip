@@ -6,6 +6,7 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   MaxLength,
   Min,
@@ -144,4 +145,48 @@ export class UpdateRoomDto {
   @IsNotEmpty()
   @IsString()
   address: string;
+}
+
+export class GetListDto {
+  @IsOptional()
+  price: number;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(VALID_PROVINCES_CODE)
+  city: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(DESCRIPTION)
+  description: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsIn(AMENITIES, { each: true })
+  amenities: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  numberOfLivingRoom: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  numberOfBedroom: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  numberOfBed: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  numberOfBathroom: number;
+
+  @IsOptional()
+  @IsEnum(RoomType)
+  roomType: RoomType;
 }

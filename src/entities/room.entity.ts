@@ -29,7 +29,7 @@ export class Room extends BaseModel {
   })
   isAvailable: boolean;
 
-  @Column('numeric')
+  @Column('float', { nullable: false, default: 0 })
   price: number;
 
   @Column('text')
@@ -51,10 +51,10 @@ export class Room extends BaseModel {
   address: string;
 
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
-  roomDiscount: RoomDiscount[];
+  discount: RoomDiscount[];
 
   @OneToMany((type) => RoomAmenities, (roomAmenities) => roomAmenities.amenities, { cascade: true })
-  roomAmenities: RoomAmenities[];
+  amenities: RoomAmenities[];
 
   @OneToMany((type) => Image, (image) => image.room, { cascade: true })
   image: Image[];

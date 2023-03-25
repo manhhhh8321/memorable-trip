@@ -12,11 +12,11 @@ import {
 import { Room, RoomAmenities } from 'src/entities';
 import { City } from 'src/entities/city.entity';
 import { ErrorHelper } from 'src/helpers/error.utils';
-import { FindConditions, Repository } from 'typeorm';
+import { Brackets, FindConditions, LessThan, LessThanOrEqual, Repository } from 'typeorm';
 import { AmenitiesService } from '../amenities/amenities.service';
 import { DescriptionService } from '../description/description.service';
 import { UserService } from '../user/user.service';
-import { RoomDto, UpdateRoomDto } from './dto/room.dto';
+import { GetListDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
 import { generateFakeRoomDto } from './faker/room.faker';
 import { RoomsRepository } from './room.repository';
 @Injectable()
@@ -122,10 +122,69 @@ export class RoomService {
   //   }
   // }
 
-  async getAll(options: IPaginationOptions, searchCriteria?: FindConditions<Room>) {
-    const room = await this.roomRepo.paginationRepository(this.roomEntityRepo, options);
+  async getAll(options: IPaginationOptions, searchCriteria?: GetListDto) {
+    const {
+      price,
+      roomType,
+      amenities,
+      description,
+      numberOfBathroom,
+      numberOfBed,
+      numberOfBedroom,
+      numberOfLivingRoom,
+      city,
+    } = searchCriteria;
 
-    return room;
+    const where: any = { isAvailable: true };
+
+    if (price) {
+      where.price = price;
+    }
+
+    if (roomType) {
+      where.roomType = roomType;
+    }
+
+    if (amenities) {
+      const amenityIds = await (
+        await this.roomRepo.createQueryBuilder('amenity')
+      )
+        .where('amenity.name IN (:...names)', { names: amenities })
+        .getMany()
+        .then((amenities) => amenities.map((amenity) => amenity.id));
+      where.amenities = { id: amenityIds };
+    }
+
+    if (description) {
+      where.description = { id: description };
+    }
+
+    if (numberOfBathroom) {
+      where.numberOfBathroom = numberOfBathroom;
+    }
+
+    if (numberOfBed) {
+      where.numberOfBed = numberOfBed;
+    }
+
+    if (numberOfBedroom) {
+      where.numberOfBedroom = numberOfBedroom;
+    }
+
+    if (numberOfLivingRoom) {
+      where.numberOfLivingRoom = numberOfLivingRoom;
+    }
+
+    if (city) {
+      where.city = { id: city };
+    }
+
+    const rooms = await this.roomRepo.find({
+      where,
+      relations: ['amenities', 'description', 'city'],
+    });
+
+    return rooms;
   }
 
   async findById(id: number) {

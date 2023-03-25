@@ -25,6 +25,10 @@ export class BaseRepository<Model extends BaseModel> extends EventEmitter {
     return classToPlain(await this.model.save(entity)) as any;
   }
 
+  async createQueryBuilder(alias: string, queryRunner?: any): Promise<SelectQueryBuilder<Model>> {
+    return this.model.createQueryBuilder(alias, queryRunner);
+  }
+
   async createMultipleEntities(entities?: DeepPartial<Model>[]): Promise<Array<Model>> {
     return classToPlain(await this.model.save(entities)) as any;
   }
