@@ -22,6 +22,13 @@ export class Amenities extends BaseModel {
   })
   rate: number;
 
+  @Column({
+    type: 'text',
+    nullable: true,
+    unique: true,
+  })
+  icon: string;
+
   @OneToMany((type) => RoomAmenities, (roomAmenities) => roomAmenities.amenities, { cascade: true })
   roomAmenities: RoomAmenities[];
 }

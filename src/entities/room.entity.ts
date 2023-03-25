@@ -1,9 +1,9 @@
 import { BaseModel } from 'src/base/base.entity';
 import { RoomType } from 'src/enums/user.enum';
-import { Agent } from 'src/entities/agent.entity';
+import { City } from 'src/entities/city.entity';
 import { RoomAmenities } from 'src/entities/amenities.entity';
-import { Discount, RoomDiscount, Image } from 'src/entities/index';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Discount, RoomDiscount, Image, Description, User } from 'src/entities/index';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class Room extends BaseModel {
@@ -14,7 +14,8 @@ export class Room extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: RoomType,
+    enum: ['ROOM', 'ENTIRE_HOME', 'SHARED_ROOM'],
+    enumName: 'room_type',
   })
   roomType: RoomType;
 
@@ -24,20 +25,30 @@ export class Room extends BaseModel {
   @Column({
     type: 'boolean',
     nullable: true,
+    default: true,
   })
   isAvailable: boolean;
-
-  @Column({
-    type: 'numeric',
-    nullable: true,
-  })
-  roomSize: number;
 
   @Column('numeric')
   price: number;
 
-  @ManyToOne((types) => Agent, (agent) => agent.room)
-  agent: Agent;
+  @Column('text')
+  about: string;
+
+  @Column('int')
+  numberOfLivingRoom: number;
+
+  @Column('int')
+  numberOfBedroom: number;
+
+  @Column('int')
+  numberOfBed: number;
+
+  @Column('int')
+  numberOfBathroom: number;
+
+  @Column('text')
+  address: string;
 
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   roomDiscount: RoomDiscount[];
@@ -47,4 +58,14 @@ export class Room extends BaseModel {
 
   @OneToMany((type) => Image, (image) => image.room, { cascade: true })
   image: Image[];
+
+  @ManyToOne((type) => City, (city) => city.room)
+  city: City;
+
+  @ManyToOne((type) => Description, (description) => description.room)
+  description: Description;
+
+  @ManyToOne((type) => User, (user) => user.room)
+  @JoinColumn({ name: 'ownerId' })
+  user: User;
 }

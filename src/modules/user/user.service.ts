@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import lodash from 'lodash';
 import { USER_MESSAGE } from 'src/constants/message.constant';
 import { User } from 'src/entities';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
@@ -7,6 +8,7 @@ import { DeepPartial } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/user.dto';
 import { UsersRepository } from './user.repository';
+// import { MockUser } from 'src/common/MOCK_DATA (2)';
 
 @Injectable()
 export class UserService {
@@ -50,9 +52,63 @@ export class UserService {
     return await this.userRepo.create(payload);
   }
 
+  async updateUser(id: number, payload: DeepPartial<User>): Promise<User> {
+    const user = await this.findById(id);
+
+    if (!user) {
+      ErrorHelper.NotFoundException(USER_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const isMailExist = await this.userRepo.findOne({
+      where: {
+        email: payload.email,
+      },
+    });
+
+    if (isMailExist && isMailExist.id !== id) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.EMAIL_ALREADY_EXIST);
+    }
+
+    const isPhoneExist = await this.userRepo.findOne({
+      where: {
+        phone: payload.phone,
+      },
+    });
+
+    if (isPhoneExist && isPhoneExist.id !== id) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.PHONE_ALREADY_EXIST);
+    }
+
+    if (payload.password) {
+      try {
+        payload.password = await EncryptHelper.hash(payload.password);
+      } catch (e) {
+        throw ErrorHelper.BadRequestException('Hash password failed');
+      }
+    }
+
+    const updatedUser = await this.userRepo.update(id, payload);
+    return await this.userRepo.findById(id);
+  }
+
   async update(id: number, payload: DeepPartial<User>) {
     return await this.userRepo.update(id, payload);
   }
 
-  async verifyToCreateUser(randNumber: number) {}
+  async delete(id: number): Promise<void> {
+    await this.userRepo.removeItem(id);
+  }
+
+  // async seedUser() {
+  //   MockUser.forEach(async (user) => {
+  //     const randomPassword = Math.random().toString(36).slice(-8);
+  //     await this.createUser({
+  //       ...user,
+  //       firstName: user.first_name,
+  //       lastName: user.last_name,
+  //       password: randomPassword,
+  //     });
+  //   });
+  //   return 'Seed user success';
+  // }
 }

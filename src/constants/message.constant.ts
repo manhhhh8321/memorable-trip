@@ -11,3 +11,28 @@ export const MAIL_MESSAGE = {
   VERIFICATION_CODE_EXPIRED: 'VERIFICATION_CODE_EXPIRED',
   VERIFIED_EMAIL_SUCCESSFULLY: 'VERIFIED_EMAIL_SUCCESSFULLY',
 };
+
+export const DESCRIPTION_MESSAGE = {
+  GET: {
+    NOT_FOUND: 'DESCRIPTION_NOT_FOUND',
+  },
+};
+
+export const CITY_MESSAGE = {
+  GET: {
+    NOT_FOUND: 'CITY_NOT_FOUND',
+  },
+};
+
+export const AMENITIES_MESSAGE = {
+  GET: {
+    NOT_FOUND: 'AMENITIES_NOT_FOUND',
+  },
+};
+
+export const ROOM_MESSAGE = {
+  GET: {
+    NOT_FOUND: 'ROOM_NOT_FOUND',
+    NOT_OWNER: 'You do not own this room!',
+  },
+};
