@@ -3,7 +3,7 @@ import { Auth } from 'src/common/decorators/auth.decorator';
 import { AuthGuard } from 'src/common/guards/authenticate.guard';
 import { UserType } from 'src/enums/user.enum';
 import { DescriptionService } from '../description/description.service';
-import { RoomDto } from './dto/room.dto';
+import { GetListDto, RoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
 
 import { Request } from '@nestjs/common';
@@ -34,14 +34,19 @@ export class RoomController {
       userType: UserType.ADMIN,
     },
   ])
-  async getAll(@Query('page', new ParseIntPipe()) page: number, @Query('limit', new ParseIntPipe()) limit: number) {
-    return await this.roomService.getAll({
-      page,
-      limit,
-    });
+  async getAll(@Query('page') page?: number, @Query('limit') limit?: number, @Query() searchCriteria?: GetListDto) {
+    page ? page : (page = 1);
+    limit ? limit : (limit = 10);
+    return await this.roomService.getAll(
+      {
+        page,
+        limit,
+      },
+      searchCriteria,
+    );
   }
 
-  @Get(':id')
+  @Get('/:id')
   @UseGuards(AuthGuard)
   @Auth([
     {
