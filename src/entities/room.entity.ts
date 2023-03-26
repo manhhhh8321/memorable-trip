@@ -1,9 +1,9 @@
 import { BaseModel } from 'src/base/base.entity';
 import { RoomType } from 'src/enums/user.enum';
 import { City } from 'src/entities/city.entity';
-import { RoomAmenities } from 'src/entities/amenities.entity';
-import { Discount, RoomDiscount, Image, Description, User } from 'src/entities/index';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Amenities, RoomAmenities } from 'src/entities/amenities.entity';
+import { Discount, RoomDiscount, Image, Description, User, Booking, BookingDate } from 'src/entities/index';
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity()
 export class Room extends BaseModel {
@@ -50,22 +50,32 @@ export class Room extends BaseModel {
   @Column('text')
   address: string;
 
+  @DeleteDateColumn({
+    type: 'timestamp',
+    nullable: true,
+    name: 'deleted_at',
+  })
+  deletedAt: Date;
+
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   discount: RoomDiscount[];
 
-  @OneToMany((type) => RoomAmenities, (roomAmenities) => roomAmenities.amenities, { cascade: true })
-  amenities: RoomAmenities[];
+  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room)
+  roomAmenities: RoomAmenities[];
 
   @OneToMany((type) => Image, (image) => image.room, { cascade: true })
   image: Image[];
 
-  @ManyToOne((type) => City, (city) => city.room)
+  @ManyToOne((type) => City, (city) => city.room, { eager: true })
   city: City;
 
-  @ManyToOne((type) => Description, (description) => description.room)
+  @ManyToOne((type) => Description, (description) => description.room, { eager: true })
   description: Description;
 
   @ManyToOne((type) => User, (user) => user.room)
   @JoinColumn({ name: 'ownerId' })
   user: User;
+
+  @OneToMany((types) => BookingDate, (bookingDate) => bookingDate.room, { cascade: true })
+  bookingDate: BookingDate[];
 }

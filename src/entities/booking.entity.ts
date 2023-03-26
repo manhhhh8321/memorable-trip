@@ -1,9 +1,9 @@
 import { BaseModel } from 'src/base/base.entity';
 import { BookingStatusEnum, BookType } from 'src/enums/user.enum';
-import { Payment } from 'src/entities/index';
+import { BookingDate, Payment, Room } from 'src/entities/index';
 
 import { User } from 'src/entities/index';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity()
 export class Booking extends BaseModel {
@@ -11,18 +11,6 @@ export class Booking extends BaseModel {
     super();
     Object.assign(this, partial);
   }
-
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-  })
-  checkIn: string;
-
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-  })
-  checkOut: string;
 
   @Column({
     type: 'text',
@@ -42,16 +30,14 @@ export class Booking extends BaseModel {
   })
   status: BookingStatusEnum;
 
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  ref: string;
-
   @ManyToOne((type) => User, (user) => user.booking, { cascade: true })
   user: User;
 
   @OneToOne(() => Payment)
   @JoinColumn()
   payment: Payment;
+
+  @OneToOne(() => BookingDate)
+  @JoinColumn()
+  bookingDate: BookingDate;
 }

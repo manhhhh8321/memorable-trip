@@ -94,4 +94,8 @@ export class BaseRepository<Model extends BaseModel> extends EventEmitter {
   getModel(): Repository<Model> {
     return this.model;
   }
+
+  queryRaw(query: string, params?: any[]): Promise<any> {
+    return this.model.query(query, params);
+  }
 }

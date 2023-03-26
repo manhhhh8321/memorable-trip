@@ -12,7 +12,7 @@ import {
 import { Room, RoomAmenities } from 'src/entities';
 import { City } from 'src/entities/city.entity';
 import { ErrorHelper } from 'src/helpers/error.utils';
-import { Brackets, FindConditions, LessThan, LessThanOrEqual, Repository } from 'typeorm';
+import { Brackets, Equal, In, LessThan, LessThanOrEqual, Repository } from 'typeorm';
 import { AmenitiesService } from '../amenities/amenities.service';
 import { DescriptionService } from '../description/description.service';
 import { UserService } from '../user/user.service';
@@ -132,13 +132,13 @@ export class RoomService {
       numberOfBed,
       numberOfBedroom,
       numberOfLivingRoom,
-      city,
+      cityCode,
     } = searchCriteria;
 
     const where: any = { isAvailable: true };
 
     if (price) {
-      where.price = price;
+      where.price = LessThanOrEqual(price);
     }
 
     if (roomType) {
@@ -146,13 +146,21 @@ export class RoomService {
     }
 
     if (amenities) {
-      const amenityIds = await (
-        await this.roomRepo.createQueryBuilder('amenity')
-      )
-        .where('amenity.name IN (:...names)', { names: amenities })
-        .getMany()
-        .then((amenities) => amenities.map((amenity) => amenity.id));
-      where.amenities = { id: amenityIds };
+      const subquery = (await this.roomRepo.createQueryBuilder('room'))
+        .innerJoin('room.roomAmenities', 'ras')
+        .innerJoin('ras.amenities', 'amenities')
+        .where('amenities.name IN (:...names)', { names: amenities })
+        .select('room.id')
+        .getQuery();
+
+      const qb = (await this.roomRepo.createQueryBuilder('room'))
+        .innerJoin('room.roomAmenities', 'ras')
+        .innerJoin('ras.amenities', 'amenities')
+        .where(`room.id IN (${subquery})`)
+        .andWhere('amenities.name IN (:...names)', { names: amenities });
+
+      const rooms = await qb.getMany();
+      where.id = In(rooms.map((room) => room.id));
     }
 
     if (description) {
@@ -175,16 +183,21 @@ export class RoomService {
       where.numberOfLivingRoom = numberOfLivingRoom;
     }
 
-    if (city) {
-      where.city = { id: city };
+    if (cityCode) {
+      const qb = await this.roomRepo.createQueryBuilder('room');
+
+      const subquery = await qb
+        .innerJoin('room.city', 'city')
+        .where('city.code = :code', { code: cityCode })
+        .select('room.id')
+        .getMany();
+
+      where.id = In(subquery.map((room) => room.id));
     }
 
-    const rooms = await this.roomRepo.find({
+    return this.roomRepo.paginationRepository(this.roomEntityRepo, options, {
       where,
-      relations: ['amenities', 'description', 'city'],
     });
-
-    return rooms;
   }
 
   async findById(id: number) {
@@ -232,6 +245,8 @@ export class RoomService {
       ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_OWNER);
     }
 
-    return this.roomRepo.removeItem(room);
+    return this.roomRepo.softDeleteItem({
+      id,
+    });
   }
 }

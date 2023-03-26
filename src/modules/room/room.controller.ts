@@ -3,7 +3,7 @@ import { Auth } from 'src/common/decorators/auth.decorator';
 import { AuthGuard } from 'src/common/guards/authenticate.guard';
 import { UserType } from 'src/enums/user.enum';
 import { DescriptionService } from '../description/description.service';
-import { GetListDto, RoomDto } from './dto/room.dto';
+import { GetListDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
 
 import { Request } from '@nestjs/common';
@@ -98,7 +98,7 @@ export class RoomController {
       userType: UserType.ADMIN,
     },
   ])
-  async update(@Param('id', new ParseIntPipe()) id: number, @Body() payload: RoomDto, @Req() req: any) {
+  async update(@Param('id', new ParseIntPipe()) id: number, @Body() payload: UpdateRoomDto, @Req() req: any) {
     const userId = req.user.id;
 
     const user = await this.userService.findById(userId);
