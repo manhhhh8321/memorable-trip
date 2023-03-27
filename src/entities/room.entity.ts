@@ -22,13 +22,6 @@ export class Room extends BaseModel {
   @Column('text')
   roomName: string;
 
-  @Column({
-    type: 'boolean',
-    nullable: true,
-    default: true,
-  })
-  isAvailable: boolean;
-
   @Column('float', { nullable: false, default: 0 })
   price: number;
 
@@ -49,6 +42,12 @@ export class Room extends BaseModel {
 
   @Column('text')
   address: string;
+
+  @Column({
+    type: 'boolean',
+    default: true,
+  })
+  isActive: boolean;
 
   @DeleteDateColumn({
     type: 'timestamp',
@@ -76,6 +75,6 @@ export class Room extends BaseModel {
   @JoinColumn({ name: 'ownerId' })
   user: User;
 
-  @OneToMany((types) => BookingDate, (bookingDate) => bookingDate.room, { cascade: true })
+  @OneToMany((types) => BookingDate, (bookingDate) => bookingDate.room, { cascade: true, eager: true })
   bookingDate: BookingDate[];
 }
