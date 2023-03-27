@@ -6,6 +6,7 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   MaxLength,
@@ -84,64 +85,69 @@ export class RoomDto {
 }
 
 export class UpdateRoomDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MaxLength(255)
   roomName: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Min(1)
   price: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Min(1)
   numberOfLivingRoom: number;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(1)
   numberOfBedroom: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Min(1)
   numberOfBed: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Min(1)
   numberOfBathroom: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(RoomType)
   roomType: RoomType;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   about: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsIn(DESCRIPTION)
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsIn(VALID_PROVINCES_CODE)
   city: string;
 
+  @IsOptional()
   @IsArray()
   @IsNotEmpty()
   @IsIn(AMENITIES, { each: true })
   amenities: string[];
 
+  @IsOptional()
   @IsArray()
   @IsNotEmpty()
   @ArrayMinSize(3)
   image: string[];
 
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   address: string;
@@ -152,13 +158,11 @@ export class GetListDto {
   price: number;
 
   @IsOptional()
-  @IsString()
-  @IsIn(VALID_PROVINCES_CODE)
-  city: string;
+  @IsNumberString()
+  cityCode: string;
 
   @IsOptional()
-  @IsString()
-  @IsIn(DESCRIPTION)
+  @IsNumberString()
   description: string;
 
   @IsOptional()
@@ -167,23 +171,19 @@ export class GetListDto {
   amenities: string[];
 
   @IsOptional()
-  @IsNumber()
-  @Min(1)
+  @IsNumberString()
   numberOfLivingRoom: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(1)
+  @IsNumberString()
   numberOfBedroom: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(1)
+  @IsNumberString()
   numberOfBed: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(1)
+  @IsNumberString()
   numberOfBathroom: number;
 
   @IsOptional()
