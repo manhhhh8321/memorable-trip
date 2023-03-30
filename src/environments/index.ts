@@ -25,6 +25,9 @@ const CACHE_PORT: number = +process.env.CACHE_PORT || 6379;
 // phpmyadmin
 const PHPMYADMIN_PORT: number = +process.env.PHPMYADMIN_PORT || 8080;
 
+const SMTP_USERNAME = process.env.SMTP_USERNAME;
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
+
 export {
   NODE_ENV,
   SERVER_PORT,
@@ -38,4 +41,6 @@ export {
   CACHE_TYPE,
   CACHE_HOST,
   CACHE_PORT,
+  SMTP_USERNAME,
+  SMTP_PASSWORD,
 };

@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Verify Email</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f1f1f1; } .container { max-width:
+      500px; margin: 20px auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); text-align:
+      center; } h1 { font-size: 32px; margin-bottom: 20px; color: #333333; } p { font-size: 16px; line-height: 24px;
+      margin-bottom: 20px; color: #555555; margin-top: 20px; } .button { display: inline-block; background-color:
+      #4CAF50; color: white; padding: 10px 20px; font-size: 16px; border-radius: 5px; text-decoration: none;
+      margin-bottom: 20px; } .footer { background-color: #333333; color: #f1f1f1; padding: 5px; font-size: 12px;
+      text-align: center; margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h1>Email Verification</h1>
+      <p>Hello {{mail}},</p>
+      <p>Please use the following code to verify your email address:</p>
+      <p style='font-size: 24px; font-weight: bold; margin-top: 20px;'>{{code}}</p>
+      <p>If you did not request this verification, please ignore this email.</p>
+      <p>Thank you for using our service!</p>
+      <div class='footer'>
+        <p>&copy; 2023 Memorable-Trip. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

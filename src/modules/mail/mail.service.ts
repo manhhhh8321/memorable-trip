@@ -4,31 +4,23 @@ import { MailPayload } from './dto/mail.dto';
 import * as nodemailer from 'nodemailer';
 import * as dotenv from 'dotenv';
 import { MAIL_MESSAGE } from 'src/constants/message.constant';
+import { MailerService } from '@nestjs-modules/mailer';
 dotenv.config();
 
 @Injectable()
 export class MailService {
-  constructor() {}
+  constructor(private mailerService: MailerService) {}
 
   async sendMail(payload: MailPayload) {
     try {
       // let testAccount = await nodemailer.createTestAccount();
-      console.log(process.env.SMTP_PASSWORD);
-      let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.SMTP_USERNAME,
-          pass: process.env.SMTP_PASSWORD,
-        },
-      });
-
-      let info = await transporter.sendMail({
+      let info = await this.mailerService.sendMail({
         from: 'no-reply@example.com',
         to: payload.email,
         subject: payload.subject,
-        html: `<h1>Hi ${payload.content}</h1>`,
+        context: {
+          code: payload.content,
+        },
       });
 
       if (!info.messageId) {

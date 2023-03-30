@@ -5,7 +5,7 @@ import { ErrorHelper } from 'src/helpers/error.utils';
 import { TokenHelper } from 'src/helpers/token.helper';
 import { ConfigService } from 'src/shared/config/config.service';
 import { RedisService } from '../redis/redis.service';
-import { MailService } from '../mail/mail.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 import { UserService } from '../user/user.service';
 
@@ -32,7 +32,7 @@ export class AuthService {
     private userService: UserService,
     private configService: ConfigService,
     private readonly redisService: RedisService,
-    private readonly mailService: MailService,
+    private readonly mailService: MailerService,
   ) {}
 
   async login(params: LoginDto) {
@@ -90,9 +90,13 @@ export class AuthService {
     try {
       await this.redisService.set(user.id.toString(), JSON.stringify(p), 120);
       await this.mailService.sendMail({
-        content: `Your verification code is ${randNumber}`,
-        subject: 'Verification code',
-        email: email,
+        to: email,
+        subject: 'Verify your email',
+        template: 'verify-email',
+        context: {
+          code: randNumber,
+          mail: email,
+        },
       });
     } catch (err) {
       ErrorHelper.BadRequestException(JSON.stringify(err));
