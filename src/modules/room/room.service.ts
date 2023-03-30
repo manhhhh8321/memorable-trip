@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import moment from 'moment';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { PROVINCES } from 'src/common/base.constant';
 import {
@@ -9,10 +10,20 @@ import {
   ROOM_MESSAGE,
   USER_MESSAGE,
 } from 'src/constants/message.constant';
-import { Room, RoomAmenities } from 'src/entities';
+import { BookingDate, Room, RoomAmenities } from 'src/entities';
 import { City } from 'src/entities/city.entity';
 import { ErrorHelper } from 'src/helpers/error.utils';
-import { Brackets, Equal, In, LessThan, LessThanOrEqual, Repository } from 'typeorm';
+import {
+  Brackets,
+  Equal,
+  getConnection,
+  getRepository,
+  In,
+  LessThan,
+  LessThanOrEqual,
+  MoreThan,
+  Repository,
+} from 'typeorm';
 import { AmenitiesService } from '../amenities/amenities.service';
 import { DescriptionService } from '../description/description.service';
 import { UserService } from '../user/user.service';
@@ -29,6 +40,7 @@ export class RoomService {
     private userService: UserService,
     @InjectRepository(RoomAmenities) private readonly roomAmenitiesRepo: Repository<RoomAmenities>,
     @InjectRepository(Room) private readonly roomEntityRepo: Repository<Room>,
+    @InjectRepository(BookingDate) private readonly bookingDateRepo: Repository<BookingDate>,
   ) {}
 
   async seedCity() {
@@ -248,5 +260,41 @@ export class RoomService {
     return this.roomRepo.softDeleteItem({
       id,
     });
+  }
+
+  async findAvailableRooms(
+    startDate: string | Date,
+    endDate: string | Date,
+    city?: string,
+    page?: number,
+    limit?: number,
+  ) {
+    const activeRooms = await this.roomRepo.find({
+      where: { isActive: true },
+    });
+
+    const queryBuilder = getRepository(Room)
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.city', 'city')
+      .leftJoinAndSelect('room.bookingDate', 'bd')
+      .where('room.isActive = :isActive', { isActive: true })
+      .andWhere('bd."isAvailable" = :isAvailable', { isAvailable: true })
+      .andWhere('bd."checkIn" >= :startDate', { startDate })
+      .andWhere('bd."checkOut" <= :endDate', { endDate });
+
+    if (city) {
+      queryBuilder.andWhere('city.name LIKE :cityName', { cityName: `%${city}%` });
+    }
+
+    const bookingDateRooms = await queryBuilder.getMany();
+    const rooms = [...activeRooms, ...bookingDateRooms];
+
+    return await this.roomRepo.paginationRepository(
+      this.roomEntityRepo,
+      { limit, page },
+      {
+        where: { id: In(rooms.map((room) => room.id)) },
+      },
+    );
   }
 }

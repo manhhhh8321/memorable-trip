@@ -3,7 +3,7 @@ import { Auth } from 'src/common/decorators/auth.decorator';
 import { AuthGuard } from 'src/common/guards/authenticate.guard';
 import { UserType } from 'src/enums/user.enum';
 import { DescriptionService } from '../description/description.service';
-import { GetListDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
+import { GetListDto, QueryAvailableRoomDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
 
 import { Request } from '@nestjs/common';
@@ -44,6 +44,19 @@ export class RoomController {
       },
       searchCriteria,
     );
+  }
+
+  @Get('available')
+  async findAvailableRoom(
+    @Query() payload: QueryAvailableRoomDto,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    page ? page : (page = 1);
+    limit ? limit : (limit = 10);
+
+    const { checkIn, checkOut, city } = payload;
+    return await this.roomService.findAvailableRooms(checkIn, checkOut, city, page, limit);
   }
 
   @Get('/:id')

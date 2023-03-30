@@ -11,13 +11,13 @@ export class BookingDate extends BaseModel {
   }
 
   @Column({
-    type: 'timestamp',
+    type: 'date',
     nullable: false,
   })
   checkIn: Date;
 
   @Column({
-    type: 'timestamp',
+    type: 'date',
     nullable: false,
   })
   checkOut: Date;
