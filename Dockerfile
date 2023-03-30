@@ -1,13 +1,11 @@
 FROM node:14-alpine as builder
 
-WORKDIR /app
+WORKDIR /
 
 COPY package.json package-lock.json yarn.lock ./
 
 RUN yarn install --ignore-scripts
 
-ENV PATH=/app/node_modules/.bin:$PATH
-
-WORKDIR /app/source
+ENV PATH=/node_modules/.bin:$PATH
 
 CMD ["yarn", "start:prod"]
