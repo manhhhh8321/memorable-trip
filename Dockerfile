@@ -4,7 +4,7 @@ WORKDIR /
 ENV PATH /node_modules/.bin:$PATH
 
 COPY package.json yarn.lock ./
-
+RUN yarn add node-gyp
 RUN yarn install --network-concurrency 1
 
 COPY . .
