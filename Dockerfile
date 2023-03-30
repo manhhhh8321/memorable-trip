@@ -1,4 +1,4 @@
-FROM node:14.17.3
+FROM node:14.21.3
 WORKDIR /
 
 ENV PATH /node_modules/.bin:$PATH
