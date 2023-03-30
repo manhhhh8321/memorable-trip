@@ -1,20 +1,16 @@
-# Set the base image to use
-FROM node:14-alpine
-
-# Set the working directory inside the container
+FROM node:14.17.3
 WORKDIR /
 
-# Copy the package.json and yarn.lock files into the container
+ENV PATH /node_modules/.bin:$PATH
+
 COPY package.json yarn.lock ./
 
-# Install dependencies using yarn
-RUN yarn install --frozen-lockfile --production=true
+RUN yarn install --network-concurrency 1
 
-# Copy the rest of the application code into the container
 COPY . .
 
-# Expose the port that the application will run on
 EXPOSE 3000
 
-# Start the application with yarn
+RUN yarn build
+
 CMD ["yarn", "start"]
