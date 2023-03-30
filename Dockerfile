@@ -6,7 +6,7 @@ ENV PATH=/node_modules/.bin:$PATH
 
 COPY package.json package-lock.json yarn.lock ./
 
-RUN yarn install --ignore-scripts
+RUN yarn install 
 
 COPY . .
 
