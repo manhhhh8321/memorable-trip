@@ -2,6 +2,8 @@ FROM node:14.17.3
 
 WORKDIR /
 
+ENV PATH=/node_modules/.bin:$PATH
+
 COPY package.json package-lock.json yarn.lock ./
 
 RUN yarn install --ignore-scripts
@@ -14,5 +16,5 @@ RUN yarn build
 
 ENV PATH=/node_modules/.bin:$PATH
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "start"]
 
