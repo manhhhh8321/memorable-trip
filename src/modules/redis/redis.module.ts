@@ -1,12 +1,13 @@
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { Module } from '@nestjs/common';
+import { REDIS_URL } from 'src/environments';
 import { RedisService } from './redis.service';
 
 @Module({
   imports: [
     RedisModule.forRoot({
       config: {
-        url: 'redis://localhost:6379',
+        url: REDIS_URL,
       },
     }),
   ],

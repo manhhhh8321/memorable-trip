@@ -18,13 +18,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           // entities: [__dirname + '/../modules/**entities/*.entity{.ts,.js}'],
           entities: [__dirname + '/../../entities/*.entity{.ts,.js}'],
           synchronize: true,
-          // ssl:
-          //   configService.get<string>('NODE_ENV') != 'local'
-          //     ? {
-          //         rejectUnauthorized: false,
-          //       }
-          //     : false,
-          ssl: false,
+          ssl:
+            configService.get<string>('NODE_ENV') != 'local'
+              ? {
+                  rejectUnauthorized: false,
+                }
+              : false,
+          // ssl: true,
           keepConnectionAlive: true,
         };
       },

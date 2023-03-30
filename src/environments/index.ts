@@ -32,6 +32,8 @@ const IMAGEKIT_PUBLIC_KEY = process.env.IMAGEKIT_PUBLIC_KEY;
 const IMAGEKIT_PRIVATE_KEY = process.env.IMAGEKIT_PRIVATE_KEY;
 const IMAGEKIT_ENDPOINT = process.env.IMAGEKIT_ENDPOINT;
 
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+
 export {
   NODE_ENV,
   SERVER_PORT,
@@ -50,4 +52,5 @@ export {
   IMAGEKIT_ENDPOINT,
   IMAGEKIT_PRIVATE_KEY,
   IMAGEKIT_PUBLIC_KEY,
+  REDIS_URL,
 };
