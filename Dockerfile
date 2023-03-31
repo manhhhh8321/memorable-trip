@@ -4,9 +4,9 @@ WORKDIR /
 
 ENV PATH=/app/node_modules/.bin:$PATH
 
-COPY package.json package-lock.json yarn.lock ./
+COPY package.json yarn.lock ./
 
-RUN yarn install --ignore-scripts
+RUN yarn install --network-concurrency 1
 
 COPY . .
 
