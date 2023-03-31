@@ -1,7 +1,8 @@
-FROM node:14.17.3
+FROM node:14-alpine 
+
 WORKDIR /
 
-ENV PATH /node_modules/.bin:$PATH
+ENV PATH=/app/node_modules/.bin:$PATH
 
 COPY package.json yarn.lock ./
 
@@ -9,8 +10,8 @@ RUN yarn install --network-concurrency 1
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3001
 
 RUN yarn build
 
-CMD ["yarn", "start"]
+CMD ["yarn", "start:prod"]
