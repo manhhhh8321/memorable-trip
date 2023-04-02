@@ -20,15 +20,21 @@ export class Booking extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: BookType,
-  })
-  bookType: BookType;
-
-  @Column({
-    type: 'enum',
     enum: BookingStatusEnum,
   })
   status: BookingStatusEnum;
+
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
+  totalDiscount: number;
+
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
+  totalPrice: number;
 
   @ManyToOne((type) => User, (user) => user.booking, { cascade: true })
   user: User;

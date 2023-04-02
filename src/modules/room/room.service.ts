@@ -16,6 +16,7 @@ import { ErrorHelper } from 'src/helpers/error.utils';
 import {
   Brackets,
   Equal,
+  FindManyOptions,
   getConnection,
   getRepository,
   In,
@@ -30,6 +31,7 @@ import { UserService } from '../user/user.service';
 import { GetListDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
 import { generateFakeRoomDto } from './faker/room.faker';
 import { RoomsRepository } from './room.repository';
+import { UserType } from 'src/enums/user.enum';
 @Injectable()
 export class RoomService {
   constructor(
@@ -50,6 +52,10 @@ export class RoomService {
       const newCity = new City({ name: c.name, code: c.code });
       await this.cityRepo.save(newCity);
     }
+  }
+
+  async find(options?: FindManyOptions<Room>) {
+    return await this.roomRepo.find(options);
   }
 
   async create(payload: RoomDto) {
@@ -123,6 +129,8 @@ export class RoomService {
       await this.roomAmenitiesRepo.save(roomAmenities);
     });
 
+    await this.userService.update(userId, { userType: UserType.OWNER });
+
     return r;
   }
 
@@ -147,7 +155,7 @@ export class RoomService {
       cityCode,
     } = searchCriteria;
 
-    const where: any = { isAvailable: true };
+    const where: any = {};
 
     if (price) {
       where.price = LessThanOrEqual(price);
@@ -263,8 +271,8 @@ export class RoomService {
   }
 
   async findAvailableRooms(
-    startDate: string | Date,
-    endDate: string | Date,
+    checkIn: string | Date,
+    checkOut: string | Date,
     city?: string,
     page?: number,
     limit?: number,
@@ -279,8 +287,8 @@ export class RoomService {
       .leftJoinAndSelect('room.bookingDate', 'bd')
       .where('room.isActive = :isActive', { isActive: true })
       .andWhere('bd."isAvailable" = :isAvailable', { isAvailable: true })
-      .andWhere('bd."checkIn" >= :startDate', { startDate })
-      .andWhere('bd."checkOut" <= :endDate', { endDate });
+      .andWhere('bd."checkIn" >= :startDate', { checkIn })
+      .andWhere('bd."checkOut" <= :endDate', { checkOut });
 
     if (city) {
       queryBuilder.andWhere('city.name LIKE :cityName', { cityName: `%${city}%` });
