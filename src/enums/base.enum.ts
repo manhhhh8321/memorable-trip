@@ -4,7 +4,7 @@ export enum StatusEnum {
 }
 
 export enum RequestHeadersEnum {
-  Authorization = 'Authorization',
+  Authorization = 'authorization',
 }
 
 export enum GenderEnum {

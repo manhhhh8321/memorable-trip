@@ -62,7 +62,7 @@ export class Room extends BaseModel {
   @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room)
   roomAmenities: RoomAmenities[];
 
-  @OneToMany((type) => Image, (image) => image.room, { cascade: true })
+  @OneToMany((type) => Image, (image) => image.room, { cascade: true, eager: true })
   image: Image[];
 
   @ManyToOne((type) => City, (city) => city.room, { eager: true })
