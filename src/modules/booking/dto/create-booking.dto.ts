@@ -6,6 +6,10 @@ export class CreateBookingDto {
   @IsNumberString()
   customerId: number;
 
+  @IsNotEmpty()
+  @IsNumberString()
+  roomId: number;
+
   @IsOptional()
   @IsNotEmpty()
   @IsString()

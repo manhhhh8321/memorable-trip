@@ -4,7 +4,7 @@ import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { RoomService } from '../room/room.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Discount, RoomDiscount } from 'src/entities';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import { ROOM_MESSAGE } from 'src/constants/message.constant';
 import moment from 'moment';
@@ -17,15 +17,15 @@ export class DiscountService {
     @InjectRepository(RoomDiscount) private readonly roomDiscountRepo: Repository<RoomDiscount>,
   ) {}
   async create(userId: number, createDiscountDto: CreateDiscountDto) {
-    const { dueDate, name, roomId, isExpired, percentage } = createDiscountDto;
+    const { dueDate, name, roomId, percentage } = createDiscountDto;
     const room = await this.roomService.findById(roomId);
 
     if (!room) {
       ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_FOUND);
     }
 
-    if (isExpired() === true) {
-      ErrorHelper.BadRequestException('Discount is expired');
+    if (moment(dueDate).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')) {
+      ErrorHelper.BadRequestException('Due date must be greater than today');
     }
 
     const discount = this.discountRepo.create({
@@ -45,8 +45,22 @@ export class DiscountService {
   }
 
   async findAll(userId?: number) {
-    const where = userId ? { userId } : {};
-    return await this.discountRepo.find({ where });
+    if (userId) {
+      const userRooms = await this.roomService.find({ where: { user: { id: userId } } });
+
+      const roomIds = userRooms.map((room) => room.id);
+
+      const discounts = await this.discountRepo
+        .createQueryBuilder('discount')
+        .leftJoin('discount.roomDiscount', 'roomDiscount')
+        .where('roomDiscount.roomId IN (:...roomIds)', { roomIds })
+        .getMany();
+
+      return discounts;
+    }
+
+    const discounts = await this.discountRepo.find();
+    return discounts;
   }
 
   async update(id: number, updateDiscountDto: UpdateDiscountDto) {

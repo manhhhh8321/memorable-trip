@@ -18,9 +18,4 @@ export class CreateDiscountDto {
   @Min(1)
   @Max(80)
   percentage: number;
-
-  isExpired(): boolean {
-    const now = new Date();
-    return this.dueDate < now;
-  }
 }

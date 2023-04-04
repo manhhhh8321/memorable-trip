@@ -20,14 +20,8 @@ export class BookingService {
     private readonly userService: UserService,
     @InjectRepository(Discount) private readonly discountRepo: Repository<Discount>,
   ) {}
-  async createBooking(
-    customerId: number,
-    roomId: number,
-    checkIn: Date,
-    checkOut: Date,
-    note?: string,
-    totalDiscount?: number,
-  ): Promise<Booking> {
+  async createBooking(payload: CreateBookingDto): Promise<Booking> {
+    const { checkIn, checkOut, customerId, roomId, paymentType, note } = payload;
     const isUserValid = await this.userService.findById(customerId);
 
     if (!isUserValid) {
@@ -79,7 +73,7 @@ export class BookingService {
 
     const room = await this.roomService.findById(roomId);
     const duration = this.calculateDuration(checkIn, checkOut);
-    const totalPrice = await this.calculateTotalPrice(room.price, duration, totalDiscount || 0);
+    const { totalPrice, totalDiscount } = await this.calculateTotalPrice(room.price, duration, roomId);
 
     const bookingDate = this.bookingDateRepo.create({
       room,
@@ -114,7 +108,7 @@ export class BookingService {
     return `${durationDays} ${durationString}`;
   }
 
-  async calculateTotalPrice(price: number, duration: string, roomId: number): Promise<number> {
+  async calculateTotalPrice(price: number, duration: string, roomId: number) {
     // Get the room with the given ID
     const room = await this.roomService.findById(roomId);
 
@@ -153,7 +147,10 @@ export class BookingService {
     const discountedPrice = totalDiscount > 0 ? price - (price * totalDiscount) / 100 : price;
 
     // Calculate the total price by multiplying the discounted price with the duration
-    return discountedPrice * parseInt(duration);
+    return {
+      totalDiscount,
+      totalPrice: discountedPrice * Number(duration.split(' ')[0]),
+    };
   }
 
   findAll() {

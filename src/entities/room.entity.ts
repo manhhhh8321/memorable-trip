@@ -71,7 +71,7 @@ export class Room extends BaseModel {
   @ManyToOne((type) => Description, (description) => description.room, { eager: true })
   description: Description;
 
-  @ManyToOne((type) => User, (user) => user.room)
+  @ManyToOne((type) => User, (user) => user.room, { eager: true })
   @JoinColumn({ name: 'ownerId' })
   user: User;
 

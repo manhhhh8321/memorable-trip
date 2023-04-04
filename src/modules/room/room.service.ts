@@ -240,7 +240,7 @@ export class RoomService {
     });
 
     if (!room) {
-      ErrorHelper.BadRequestException(AMENITIES_MESSAGE.GET.NOT_FOUND);
+      ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_FOUND);
     }
 
     if (ownerId && room.user.id !== ownerId) {
