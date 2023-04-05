@@ -3,25 +3,27 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Booking, BookingDate, Discount, RoomDiscount } from 'src/entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { Between, In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { RoomService } from '../room/room.service';
-import { BookingRepository } from './booking.repositoty';
+import { BookingsRepository } from './booking.repositoty';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import { UserService } from '../user/user.service';
 import { USER_MESSAGE } from 'src/constants/message.constant';
 import { BookingStatusEnum, UserType } from 'src/enums/user.enum';
+import { PaymentService } from '../payment/payment.service';
 
 @Injectable()
 export class BookingService {
   constructor(
     @InjectRepository(BookingDate) private readonly bookingDateRepo: Repository<BookingDate>,
     private readonly roomService: RoomService,
-    @InjectRepository(Booking) private readonly bookingRepo: BookingRepository,
+    private readonly bookingRepo: BookingsRepository,
     private readonly userService: UserService,
     @InjectRepository(Discount) private readonly discountRepo: Repository<Discount>,
+    private readonly paymentService: PaymentService,
   ) {}
-  async createBooking(payload: CreateBookingDto): Promise<Booking> {
-    const { checkIn, checkOut, customerId, roomId, paymentType, note } = payload;
+  async createBooking(customerId: number, payload: CreateBookingDto): Promise<Booking> {
+    const { checkIn, checkOut, roomId, paymentType, note } = payload;
     const isUserValid = await this.userService.findById(customerId);
 
     if (!isUserValid) {
@@ -39,40 +41,23 @@ export class BookingService {
     if (isUserValid.isVerified === false) {
       ErrorHelper.BadRequestException('User is not verified');
     }
-    // Check if room is available for the requested check-in and check-out dates
-    const availableRooms = await this.roomService.find({
-      where: {
-        isActive: true,
-        bookingDates: {
-          // Find all booking dates that overlap with the requested dates
-          where: {
-            isAvailable: false,
-            checkIn: LessThanOrEqual(checkOut),
-            checkOut: MoreThanOrEqual(checkIn),
-          },
-          // Don't return the booking dates themselves, just the room IDs
-          select: ['roomId'],
-        },
-      },
-    });
 
-    const bookedRoomIds = availableRooms.map((room) => room.bookingDate[0].room.id);
+    const isRoomAvailable = await this.bookingDateRepo
+      .createQueryBuilder('bookingDate')
+      .leftJoinAndSelect('bookingDate.room', 'room')
+      .where('room.id = :roomId', { roomId })
+      .andWhere('bookingDate.checkIn >= :checkIn', { checkIn })
+      .andWhere('bookingDate.checkOut <= :checkOut', { checkOut })
+      .andWhere('bookingDate.isAvailable = :isAvailable', { isAvailable: true })
+      .getMany();
 
-    // Find all rooms that are active and do not have any overlapping booking dates
-    const rooms = await this.roomService.find({
-      where: {
-        isActive: true,
-        id: Not(bookedRoomIds),
-      },
-    });
-
-    // If no available rooms were found, throw an error
-    if (rooms.length === 0) {
-      ErrorHelper.BadRequestException('No available rooms for the requested dates');
+    if (isRoomAvailable.length > 0) {
+      ErrorHelper.BadRequestException('Room is not available for the requested dates');
     }
 
     const room = await this.roomService.findById(roomId);
     const duration = this.calculateDuration(checkIn, checkOut);
+
     const { totalPrice, totalDiscount } = await this.calculateTotalPrice(room.price, duration, roomId);
 
     const bookingDate = this.bookingDateRepo.create({
@@ -80,9 +65,12 @@ export class BookingService {
       checkIn,
       checkOut,
       isAvailable: false,
+      duration,
     });
 
     await this.bookingDateRepo.save(bookingDate);
+
+    const payment = await this.paymentService.create(paymentType);
 
     const booking = await this.bookingRepo.create({
       user: isUserValid,
@@ -91,14 +79,17 @@ export class BookingService {
       status: BookingStatusEnum.BOOKED,
       totalDiscount,
       totalPrice,
+      payment,
     });
 
     return booking;
   }
 
   calculateDuration(checkIn: Date, checkOut: Date): string {
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
     // Calculate the duration in milliseconds
-    const durationMs = Math.abs(checkOut.getTime() - checkIn.getTime());
+    const durationMs = Math.abs(checkInDate.getTime() - checkOutDate.getTime());
 
     // Convert the duration to days
     const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24));
@@ -113,17 +104,12 @@ export class BookingService {
     const room = await this.roomService.findById(roomId);
 
     // Find all discounts for the given room
-    const roomDiscounts = await this.discountRepo.find({
-      where: {
-        dueDate: MoreThanOrEqual(new Date()),
-        roomDiscounts: {
-          where: {
-            roomId: room.id,
-          },
-        },
-      },
-      relations: ['roomDiscounts'],
-    });
+    const roomDiscounts = await this.discountRepo
+      .createQueryBuilder('discount')
+      .where('discount.dueDate >= :now', { now: new Date() })
+      .leftJoinAndSelect('discount.roomDiscount', 'roomDiscount')
+      .andWhere('roomDiscount.roomId = :roomId', { roomId: room.id })
+      .getMany();
 
     let totalDiscount = 0;
 
@@ -131,11 +117,11 @@ export class BookingService {
     if (roomDiscounts.length > 0) {
       totalDiscount = roomDiscounts.reduce((total, discount) => {
         // Find the room discount for the given room
-        const roomDiscount = discount.roomDiscount.find((roomDiscount) => roomDiscount.room.id === room.id);
+        const roomDiscount = discount.roomDiscount.find((roomDiscount) => roomDiscount.roomId === room.id);
 
         // If the room discount exists, add the discount percentage to the total
         if (roomDiscount) {
-          return total + roomDiscount.percentage;
+          return total + total * (roomDiscount.percentage / 100);
         }
 
         // If the room discount doesn't exist, return the total

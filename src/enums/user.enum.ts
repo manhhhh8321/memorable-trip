@@ -28,4 +28,7 @@ export enum PaymentType {
   CARD = 'CARD',
 }
 
-export enum PaymentStatusEnum {}
+export enum PaymentStatusEnum {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+}

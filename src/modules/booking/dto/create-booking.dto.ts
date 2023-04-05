@@ -1,13 +1,18 @@
-import { IsDateString, IsEnum, IsIn, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PaymentType } from 'src/enums/user.enum';
 
 export class CreateBookingDto {
   @IsNotEmpty()
-  @IsNumberString()
-  customerId: number;
-
-  @IsNotEmpty()
-  @IsNumberString()
+  @IsNumber()
   roomId: number;
 
   @IsOptional()

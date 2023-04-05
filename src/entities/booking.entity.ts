@@ -20,7 +20,8 @@ export class Booking extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: BookingStatusEnum,
+    enum: ['BOOKED', 'CANCELLED'],
+    enumName: 'booking_status',
   })
   status: BookingStatusEnum;
 

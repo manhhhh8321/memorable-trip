@@ -5,7 +5,7 @@ import { Booking } from 'src/entities';
 import { EntityRepository, Repository } from 'typeorm';
 
 @Injectable()
-export class BookingRepository extends BaseRepository<Booking> {
+export class BookingsRepository extends BaseRepository<Booking> {
   constructor(@InjectRepository(Booking) private readonly bookingRepo: Repository<Booking>) {
     super(bookingRepo);
   }
