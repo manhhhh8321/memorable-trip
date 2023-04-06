@@ -44,7 +44,7 @@ export class Booking extends BaseModel {
   @JoinColumn()
   payment: Payment;
 
-  @OneToOne(() => BookingDate)
+  @OneToOne(() => BookingDate, { cascade: true })
   @JoinColumn()
   bookingDate: BookingDate;
 }

@@ -3,7 +3,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Booking, BookingDate, Discount, RoomDiscount } from 'src/entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { Between, Brackets, In, LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { RoomService } from '../room/room.service';
 import { BookingsRepository } from './booking.repositoty';
 import { ErrorHelper } from 'src/helpers/error.utils';
@@ -46,12 +46,24 @@ export class BookingService {
       .createQueryBuilder('bookingDate')
       .leftJoinAndSelect('bookingDate.room', 'room')
       .where('room.id = :roomId', { roomId })
-      .andWhere('bookingDate.checkIn >= :checkIn', { checkIn })
-      .andWhere('bookingDate.checkOut <= :checkOut', { checkOut })
-      .andWhere('bookingDate.isAvailable = :isAvailable', { isAvailable: true })
-      .getMany();
+      .andWhere('bookingDate.isAvailable = :isAvailable', { isAvailable: false })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(':checkIn BETWEEN bookingDate.checkIn AND bookingDate.checkOut')
+            .orWhere(':checkOut BETWEEN bookingDate.checkIn AND bookingDate.checkOut')
+            .orWhere(
+              new Brackets((qb) => {
+                qb.where('bookingDate.checkIn BETWEEN :checkIn AND :checkOut').orWhere(
+                  'bookingDate.checkOut BETWEEN :checkIn AND :checkOut',
+                );
+              }),
+            );
+        }),
+        { checkIn, checkOut },
+      )
+      .getCount();
 
-    if (isRoomAvailable.length > 0) {
+    if (isRoomAvailable > 0) {
       ErrorHelper.BadRequestException('Room is not available for the requested dates');
     }
 
