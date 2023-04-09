@@ -37,6 +37,17 @@ export class AuthController {
     return { accessToken, refreshToken };
   }
 
+  @Post('login/admin')
+  async loginAdmin(@Body() payload: LoginDto, @Res() res: Response) {
+    const { accessToken, refreshToken, expires } = await this.authService.loginAdmin(payload);
+    res.cookie('JWT', 'Bearer ' + accessToken, {
+      maxAge: expires,
+      httpOnly: true,
+    });
+    res.json({ accessToken, refreshToken });
+    return { accessToken, refreshToken };
+  }
+
   @Post('register')
   async register(@Body() payload: CreateUserDto) {
     const result = await this.userService.createUser(payload);

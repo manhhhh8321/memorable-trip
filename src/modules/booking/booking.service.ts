@@ -9,7 +9,7 @@ import { BookingsRepository } from './booking.repositoty';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import { UserService } from '../user/user.service';
 import { USER_MESSAGE } from 'src/constants/message.constant';
-import { BookingStatusEnum, UserType } from 'src/enums/user.enum';
+import { BookingStatusEnum, PaymentType, UserType } from 'src/enums/user.enum';
 import { PaymentService } from '../payment/payment.service';
 
 @Injectable()
@@ -151,8 +151,34 @@ export class BookingService {
     };
   }
 
-  findAll() {
-    return `This action returns all booking`;
+  async findAll(page?: number, limit?: number) {
+    const qb = await this.bookingRepo.createQueryBuilder('booking');
+    qb.leftJoinAndSelect('booking.user', 'user');
+    qb.leftJoinAndSelect('booking.bookingDate', 'bookingDate');
+    qb.leftJoinAndSelect('bookingDate.room', 'room');
+    qb.leftJoinAndSelect('booking.payment', 'payment');
+    return this.bookingRepo.paginationQueryBuilder(qb, { page, limit });
+  }
+
+  async findAllByUserId(userId: number, page?: number, limit?: number) {
+    const qb = await this.bookingRepo.createQueryBuilder('booking');
+    qb.leftJoinAndSelect('booking.user', 'user');
+    qb.leftJoinAndSelect('booking.bookingDate', 'bookingDate');
+    qb.leftJoinAndSelect('bookingDate.room', 'room');
+    qb.leftJoinAndSelect('booking.payment', 'payment');
+    qb.where('user.id = :userId', { userId });
+    return this.bookingRepo.paginationQueryBuilder(qb, { page, limit });
+  }
+
+  async findAllBooked(userId: number, page?: number, limit?: number) {
+    const qb = await this.bookingRepo.createQueryBuilder('booking');
+    qb.leftJoinAndSelect('booking.user', 'user');
+    qb.leftJoinAndSelect('booking.bookingDate', 'bookingDate');
+    qb.leftJoinAndSelect('bookingDate.room', 'room');
+    qb.leftJoinAndSelect('booking.payment', 'payment');
+    qb.where('user.id = :userId', { userId });
+    qb.andWhere('booking.status = :status', { status: BookingStatusEnum.BOOKED });
+    return this.bookingRepo.paginationQueryBuilder(qb, { page, limit });
   }
 
   findOne(id: number) {

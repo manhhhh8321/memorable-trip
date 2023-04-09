@@ -4,10 +4,11 @@ import { USER_MESSAGE } from 'src/constants/message.constant';
 import { User } from 'src/entities';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
 import { ErrorHelper } from 'src/helpers/error.utils';
-import { DeepPartial } from 'typeorm';
+import { Brackets, DeepPartial } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/user.dto';
 import { UsersRepository } from './user.repository';
+import { UserType } from 'src/enums/user.enum';
 // import { MockUser } from 'src/common/MOCK_DATA (2)';
 
 @Injectable()
@@ -27,6 +28,13 @@ export class UserService {
         phone,
       },
     });
+  }
+
+  async findAll(page?: number, limit?: number) {
+    const qb = await this.userRepo.createQueryBuilder('user');
+    qb.where('user.userType != :userType', { userType: UserType.ADMIN }).orderBy('user.updated_at', 'DESC');
+
+    return await this.userRepo.paginationQueryBuilder(qb, { page, limit });
   }
 
   async createUser(payload: CreateUserDto) {
@@ -95,8 +103,16 @@ export class UserService {
     return await this.userRepo.update(id, payload);
   }
 
-  async delete(id: number): Promise<void> {
-    await this.userRepo.removeItem(id);
+  async delete(id: number) {
+    const user = await this.findById(id);
+
+    if (!user) {
+      ErrorHelper.NotFoundException(USER_MESSAGE.USER_NOT_FOUND);
+    }
+
+    return await this.userRepo.softDeleteItem({
+      id,
+    });
   }
 
   // async seedUser() {

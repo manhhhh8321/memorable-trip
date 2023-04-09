@@ -28,12 +28,6 @@ export class RoomController {
   }
 
   @Get('')
-  @UseGuards(AuthGuard)
-  @Auth([
-    {
-      userType: UserType.ADMIN,
-    },
-  ])
   async getAll(@Query('page') page?: number, @Query('limit') limit?: number, @Query() searchCriteria?: GetListDto) {
     page ? page : (page = 1);
     limit ? limit : (limit = 10);
@@ -60,18 +54,6 @@ export class RoomController {
   }
 
   @Get('/:id')
-  @UseGuards(AuthGuard)
-  @Auth([
-    {
-      userType: UserType.CLIENT,
-    },
-    {
-      userType: UserType.OWNER,
-    },
-    {
-      userType: UserType.ADMIN,
-    },
-  ])
   async getById(@Param('id', new ParseIntPipe()) id: number) {
     return await this.roomService.findById(id);
   }

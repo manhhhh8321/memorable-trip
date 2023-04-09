@@ -16,6 +16,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import twilio = require('twilio');
+import { UserType } from 'src/enums/user.enum';
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -40,6 +41,20 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.USER_NOT_FOUND);
+    }
+
+    if (!(await EncryptHelper.compare(password, user.password))) {
+      ErrorHelper.BadRequestException('Wrong credentials');
+    }
+    return this._generateToken(user.id.toString());
+  }
+
+  async loginAdmin(params: LoginDto) {
+    const { email, password } = params;
+    const user = await this.userService.findByEmail(email);
+
+    if (!user || user.userType !== UserType.ADMIN) {
       ErrorHelper.BadRequestException(USER_MESSAGE.USER_NOT_FOUND);
     }
 

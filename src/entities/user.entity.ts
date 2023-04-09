@@ -2,7 +2,7 @@ import { BaseModel } from 'src/base/base.entity';
 import { UserType } from 'src/enums/user.enum';
 import { EncryptHelper } from 'src/helpers/encrypt.helper';
 import { Booking } from 'src/entities/booking.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { GenderEnum } from 'src/enums/base.enum';
 import { Room } from './room.entity';
@@ -53,6 +53,11 @@ export class User extends BaseModel {
     type: 'boolean',
   })
   isVerified: boolean;
+
+  @DeleteDateColumn({
+    default: null,
+  })
+  deleted_at: Date;
 
   // @BeforeInsert()
   // @BeforeUpdate()
