@@ -223,6 +223,7 @@ export class RoomService {
   async findById(id: number) {
     const room = await this.roomRepo.findOne({
       where: { id },
+      relations: ['roomAmenities'],
     });
 
     if (!room) {
