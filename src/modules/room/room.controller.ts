@@ -53,6 +53,21 @@ export class RoomController {
     return await this.roomService.findAvailableRooms(checkIn, checkOut, city, page, limit);
   }
 
+  @Get('user/my-listings')
+  @UseGuards(AuthGuard)
+  @Auth([
+    {
+      userType: UserType.CLIENT,
+    },
+    {
+      userType: UserType.OWNER,
+    },
+  ])
+  async getRoomByUserId(@Req() req: any) {
+    const userId = req.user.id;
+    return await this.roomService.getRoomByUserId(userId);
+  }
+
   @Get('/:id')
   async getById(@Param('id', new ParseIntPipe()) id: number) {
     return await this.roomService.findById(id);
@@ -72,12 +87,10 @@ export class RoomController {
     {
       userType: UserType.OWNER,
     },
-    {
-      userType: UserType.ADMIN,
-    },
   ])
   async create(@Body() payload: RoomDto, @Req() req: any) {
-    return await this.roomService.create(payload);
+    const userId = req.user.id;
+    return await this.roomService.create(userId, payload);
   }
 
   @Put(':id')
@@ -128,5 +141,22 @@ export class RoomController {
     }
 
     return await this.roomService.deleteRoom(id, userId);
+  }
+
+  @Get('unavailable/:id')
+  @UseGuards(AuthGuard)
+  @Auth([
+    {
+      userType: UserType.CLIENT,
+    },
+    {
+      userType: UserType.OWNER,
+    },
+    {
+      userType: UserType.ADMIN,
+    },
+  ])
+  async unavailable(@Param('id', new ParseIntPipe()) id: number, @Req() req: any) {
+    return await this.roomService.getRoomUnavailableDate(id);
   }
 }

@@ -25,10 +25,6 @@ export class RoomDto {
 
   @IsNotEmpty()
   @IsNumber()
-  userId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
   @Min(1)
   price: number;
 
@@ -127,16 +123,6 @@ export class UpdateRoomDto {
   about: string;
 
   @IsOptional()
-  @IsString()
-  @IsIn(DESCRIPTION)
-  description: string;
-
-  @IsOptional()
-  @IsString()
-  @IsIn(VALID_PROVINCES_CODE)
-  city: string;
-
-  @IsOptional()
   @IsArray()
   @IsNotEmpty()
   @IsIn(AMENITIES, { each: true })
@@ -149,7 +135,6 @@ export class UpdateRoomDto {
   image: string[];
 
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   address: string;
 }

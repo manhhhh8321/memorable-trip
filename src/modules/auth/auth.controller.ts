@@ -103,14 +103,12 @@ export class AuthController {
 
   @Post('send-otp')
   async sendOTP(@Body('phone') phone: string) {
-    const user = await this.userService.findByPhone(phone);
-    if (!user) {
-      return {
-        message: USER_MESSAGE.USER_NOT_FOUND,
-      };
-    }
-
     return await this.authService.sendOTP(phone);
+  }
+
+  @Post('verify-otp')
+  async verifyOTP(@Body() payload: PhoneLoginDto) {
+    return await this.authService.verifyOtp(payload);
   }
 
   @Post('login-otp')

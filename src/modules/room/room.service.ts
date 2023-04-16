@@ -58,7 +58,7 @@ export class RoomService {
     return await this.roomRepo.find(options);
   }
 
-  async create(payload: RoomDto) {
+  async create(userId: number, payload: RoomDto) {
     const {
       amenities,
       description,
@@ -72,7 +72,6 @@ export class RoomService {
       roomType,
       about,
       address,
-      userId,
       image,
     } = payload;
 
@@ -234,8 +233,6 @@ export class RoomService {
   }
 
   async updateRoom(id: number, payload: UpdateRoomDto, ownerId?: number) {
-    const { ...rest } = payload;
-
     const room = await this.roomRepo.findOne({
       where: { id },
     });
@@ -248,7 +245,23 @@ export class RoomService {
       ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_OWNER);
     }
 
-    const updatedRoom = Object.assign(room, rest);
+    const updatedRoom = Object.assign(room, payload);
+
+    if (payload.amenities.length > 0) {
+      const aments = await this.amenitiesService.findByNames(payload.amenities);
+
+      // Update amenities
+      await this.roomAmenitiesRepo.delete({ roomId: id });
+
+      aments.map(async (a) => {
+        const roomAmenities = new RoomAmenities();
+        const amenities = await this.amenitiesService.findByName(a.name);
+        roomAmenities.amenitiesId = amenities.id;
+        roomAmenities.roomId = id;
+
+        await this.roomAmenitiesRepo.save(roomAmenities);
+      });
+    }
 
     return this.roomRepo.updateItem(updatedRoom);
   }
@@ -288,8 +301,8 @@ export class RoomService {
       .leftJoinAndSelect('room.bookingDate', 'bd')
       .where('room.isActive = :isActive', { isActive: true })
       .andWhere('bd."isAvailable" = :isAvailable', { isAvailable: true })
-      .andWhere('bd."checkIn" >= :startDate', { checkIn })
-      .andWhere('bd."checkOut" <= :endDate', { checkOut });
+      .andWhere('bd."checkIn" >= :checkInDate', { checkInDate: checkIn })
+      .andWhere('bd."checkOut" <= :checkOutDate', { checkOutDate: checkOut });
 
     if (city) {
       queryBuilder.andWhere('city.name LIKE :cityName', { cityName: `%${city}%` });
@@ -305,5 +318,30 @@ export class RoomService {
         where: { id: In(rooms.map((room) => room.id)) },
       },
     );
+  }
+
+  async getRoomByUserId(userId: number) {
+    const rooms = await this.roomRepo.find({
+      where: { user: { id: userId } },
+      relations: ['roomAmenities'],
+    });
+
+    return rooms;
+  }
+
+  async getRoomUnavailableDate(id: number) {
+    const bookingDate = await this.bookingDateRepo.find({
+      where: { room: { id } },
+      relations: ['room'],
+    });
+
+    const unavailableDates = [];
+
+    bookingDate.forEach((bd) => {
+      const dates = `${bd.checkIn} - ${bd.checkOut}`;
+      unavailableDates.push(dates);
+    });
+
+    return unavailableDates;
   }
 }

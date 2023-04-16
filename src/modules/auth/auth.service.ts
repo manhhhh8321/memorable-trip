@@ -143,12 +143,6 @@ export class AuthService {
 
   // Twilio auth
   async sendOTP(phoneNumber: string) {
-    const user = await this.userService.findByPhone(phoneNumber);
-
-    if (!user) {
-      ErrorHelper.BadRequestException(USER_MESSAGE.USER_NOT_FOUND);
-    }
-
     try {
       await client.verify.v2.services(GLOBAL_SERVICE).verifications.create({ to: phoneNumber, channel: 'sms' });
     } catch (err) {
@@ -181,5 +175,22 @@ export class AuthService {
     }
 
     return this._generateToken(user.id.toString());
+  }
+
+  async verifyOtp(phoneLoginDto: PhoneLoginDto) {
+    const { phone, code } = phoneLoginDto;
+    try {
+      const verifyOTP = await client.verify.v2
+        .services(GLOBAL_SERVICE)
+        .verificationChecks.create({ to: phone, code: code });
+
+      if (verifyOTP.status !== 'approved') {
+        ErrorHelper.BadRequestException('Wrong credentials');
+      }
+    } catch (err) {
+      ErrorHelper.BadRequestException(err);
+    }
+
+    return `OTP verified`;
   }
 }

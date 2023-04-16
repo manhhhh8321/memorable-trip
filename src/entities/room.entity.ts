@@ -59,7 +59,7 @@ export class Room extends BaseModel {
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   discount: RoomDiscount[];
 
-  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room)
+  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room, { cascade: true })
   roomAmenities: RoomAmenities[];
 
   @OneToMany((type) => Image, (image) => image.room, { cascade: true, eager: true })
