@@ -21,6 +21,7 @@ export class MailService {
         context: {
           code: payload.content,
         },
+        template: 'verify-email',
       });
 
       if (!info.messageId) {
@@ -29,6 +30,25 @@ export class MailService {
 
       console.log(info.messageId);
       // console.log(nodemailer.getTestMessageUrl(info));
+    } catch (error) {
+      ErrorHelper.BadRequestException(error);
+    }
+  }
+
+  async sendConfirmBookingMail(payload, content) {
+    try {
+      // let testAccount = await nodemailer.createTestAccount();
+      let info = await this.mailerService.sendMail({
+        from: 'no-reply@memotrip.com',
+        to: payload.email,
+        subject: payload.subject,
+        context: content,
+        template: 'confirm-booking',
+      });
+
+      if (!info.messageId) {
+        ErrorHelper.BadRequestException(MAIL_MESSAGE.SEND_MAIL_FAILED);
+      }
     } catch (error) {
       ErrorHelper.BadRequestException(error);
     }

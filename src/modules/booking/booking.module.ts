@@ -7,9 +7,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Booking, BookingDate, Discount } from 'src/entities';
 import { BookingsRepository } from './booking.repositoty';
 import { PaymentModule } from '../payment/payment.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BookingDate, Discount, Booking]), RoomModule, UserModule, PaymentModule],
+  imports: [
+    TypeOrmModule.forFeature([BookingDate, Discount, Booking]),
+    RoomModule,
+    UserModule,
+    PaymentModule,
+    MailModule,
+  ],
   controllers: [BookingController],
   providers: [BookingService, BookingsRepository],
   exports: [BookingService],

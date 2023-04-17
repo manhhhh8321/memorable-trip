@@ -11,6 +11,7 @@ import { UserService } from '../user/user.service';
 import { USER_MESSAGE } from 'src/constants/message.constant';
 import { BookingStatusEnum, PaymentType, UserType } from 'src/enums/user.enum';
 import { PaymentService } from '../payment/payment.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class BookingService {
@@ -21,6 +22,7 @@ export class BookingService {
     private readonly userService: UserService,
     @InjectRepository(Discount) private readonly discountRepo: Repository<Discount>,
     private readonly paymentService: PaymentService,
+    private readonly mailService: MailService,
   ) {}
   async createBooking(customerId: number, payload: CreateBookingDto): Promise<Booking> {
     const { checkIn, checkOut, roomId, paymentType, note } = payload;
@@ -32,6 +34,14 @@ export class BookingService {
 
     if (checkIn > checkOut || checkIn === checkOut) {
       ErrorHelper.BadRequestException('Check-in date must be before check-out date');
+    }
+
+    if (checkIn < new Date()) {
+      ErrorHelper.BadRequestException('Check-in date must be after today');
+    }
+
+    if (checkOut < new Date()) {
+      ErrorHelper.BadRequestException('Check-out date must be after today');
     }
 
     if (isUserValid.userType === UserType.ADMIN) {
@@ -93,6 +103,25 @@ export class BookingService {
       totalPrice,
       payment,
     });
+
+    await this.mailService.sendConfirmBookingMail(
+      {
+        email: isUserValid.email,
+        subject: 'Booking Confirmation',
+      },
+      {
+        firstName: isUserValid.firstName,
+        checkIn,
+        checkOut,
+        duration,
+        note,
+        totalPrice,
+        totalDiscount,
+        paymentType,
+        roomName: room.roomName,
+        address: room.address,
+      },
+    );
 
     return booking;
   }
