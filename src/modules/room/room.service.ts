@@ -10,7 +10,7 @@ import {
   ROOM_MESSAGE,
   USER_MESSAGE,
 } from 'src/constants/message.constant';
-import { BookingDate, Room, RoomAmenities } from 'src/entities';
+import { BookingDate, Image, Room, RoomAmenities } from 'src/entities';
 import { City } from 'src/entities/city.entity';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import {
@@ -43,6 +43,7 @@ export class RoomService {
     @InjectRepository(RoomAmenities) private readonly roomAmenitiesRepo: Repository<RoomAmenities>,
     @InjectRepository(Room) private readonly roomEntityRepo: Repository<Room>,
     @InjectRepository(BookingDate) private readonly bookingDateRepo: Repository<BookingDate>,
+    @InjectRepository(Image) private readonly imageRepo: Repository<Image>,
   ) {}
 
   async seedCity() {
@@ -129,6 +130,14 @@ export class RoomService {
     });
 
     await this.userService.update(userId, { userType: UserType.OWNER });
+    image.forEach(async (i) => {
+      const img = new Image({
+        url: i,
+        room: r,
+      });
+
+      await this.imageRepo.save(img);
+    });
 
     return r;
   }

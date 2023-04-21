@@ -120,4 +120,9 @@ export class PaymentController {
   remove(@Param('id') id: string) {
     return this.paymentService.remove(+id);
   }
+
+  @Post()
+  async create() {
+    return await this.paymentService.createPaymentUrl('123', 100000);
+  }
 }

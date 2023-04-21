@@ -6,6 +6,9 @@ import { Payment } from 'src/entities';
 import { Repository } from 'typeorm';
 import { PaymentStatusEnum, PaymentType } from 'src/enums/user.enum';
 import { PaymentsRepository } from './payment.repository';
+import qs from 'qs';
+import axios from 'axios';
+import crypto from 'crypto';
 
 @Injectable()
 export class PaymentService {

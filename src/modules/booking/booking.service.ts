@@ -24,7 +24,7 @@ export class BookingService {
     private readonly paymentService: PaymentService,
     private readonly mailService: MailService,
   ) {}
-  async createBooking(customerId: number, payload: CreateBookingDto): Promise<Booking> {
+  async createBooking(customerId: number, payload: CreateBookingDto) {
     const { checkIn, checkOut, roomId, paymentType, note } = payload;
     const isUserValid = await this.userService.findById(customerId);
 
@@ -94,6 +94,11 @@ export class BookingService {
 
     const payment = await this.paymentService.create(paymentType);
 
+    let paymentUrl = '';
+    if (paymentType === PaymentType.CARD) {
+      paymentUrl = await this.paymentService.createPaymentUrl(payment.id.toString(), totalPrice);
+    }
+
     const booking = await this.bookingRepo.create({
       user: isUserValid,
       bookingDate: bookingDate,
@@ -123,7 +128,10 @@ export class BookingService {
       },
     );
 
-    return booking;
+    return {
+      ...booking,
+      paymentUrl: payment.paymentType === PaymentType.CARD ? paymentUrl : null,
+    };
   }
 
   calculateDuration(checkIn: Date, checkOut: Date): string {
