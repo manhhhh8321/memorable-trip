@@ -34,6 +34,9 @@ const IMAGEKIT_ENDPOINT = process.env.IMAGEKIT_ENDPOINT;
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
+const VNP_HASHSECRET = process.env.VNP_HASHSECRET || NEED_TO_CONFIGURED;
+const VNP_TMNCODE = process.env.VNP_TMNCODE || NEED_TO_CONFIGURED;
+
 export {
   NODE_ENV,
   SERVER_PORT,
@@ -53,4 +56,6 @@ export {
   IMAGEKIT_PRIVATE_KEY,
   IMAGEKIT_PUBLIC_KEY,
   REDIS_URL,
+  VNP_HASHSECRET,
+  VNP_TMNCODE,
 };
