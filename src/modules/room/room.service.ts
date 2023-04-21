@@ -16,6 +16,7 @@ import { ErrorHelper } from 'src/helpers/error.utils';
 import {
   Brackets,
   Equal,
+  FindManyOptions,
   getConnection,
   getRepository,
   In,
@@ -30,6 +31,7 @@ import { UserService } from '../user/user.service';
 import { GetListDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
 import { generateFakeRoomDto } from './faker/room.faker';
 import { RoomsRepository } from './room.repository';
+import { UserType } from 'src/enums/user.enum';
 @Injectable()
 export class RoomService {
   constructor(
@@ -52,7 +54,11 @@ export class RoomService {
     }
   }
 
-  async create(payload: RoomDto) {
+  async find(options?: FindManyOptions<Room>) {
+    return await this.roomRepo.find(options);
+  }
+
+  async create(userId: number, payload: RoomDto) {
     const {
       amenities,
       description,
@@ -66,7 +72,6 @@ export class RoomService {
       roomType,
       about,
       address,
-      userId,
       image,
     } = payload;
 
@@ -123,6 +128,8 @@ export class RoomService {
       await this.roomAmenitiesRepo.save(roomAmenities);
     });
 
+    await this.userService.update(userId, { userType: UserType.OWNER });
+
     return r;
   }
 
@@ -147,7 +154,7 @@ export class RoomService {
       cityCode,
     } = searchCriteria;
 
-    const where: any = { isAvailable: true };
+    const where: any = {};
 
     if (price) {
       where.price = LessThanOrEqual(price);
@@ -215,6 +222,7 @@ export class RoomService {
   async findById(id: number) {
     const room = await this.roomRepo.findOne({
       where: { id },
+      relations: ['roomAmenities'],
     });
 
     if (!room) {
@@ -225,21 +233,35 @@ export class RoomService {
   }
 
   async updateRoom(id: number, payload: UpdateRoomDto, ownerId?: number) {
-    const { ...rest } = payload;
-
     const room = await this.roomRepo.findOne({
       where: { id },
     });
 
     if (!room) {
-      ErrorHelper.BadRequestException(AMENITIES_MESSAGE.GET.NOT_FOUND);
+      ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_FOUND);
     }
 
     if (ownerId && room.user.id !== ownerId) {
       ErrorHelper.BadRequestException(ROOM_MESSAGE.GET.NOT_OWNER);
     }
 
-    const updatedRoom = Object.assign(room, rest);
+    const updatedRoom = Object.assign(room, payload);
+
+    if (payload.amenities.length > 0) {
+      const aments = await this.amenitiesService.findByNames(payload.amenities);
+
+      // Update amenities
+      await this.roomAmenitiesRepo.delete({ roomId: id });
+
+      aments.map(async (a) => {
+        const roomAmenities = new RoomAmenities();
+        const amenities = await this.amenitiesService.findByName(a.name);
+        roomAmenities.amenitiesId = amenities.id;
+        roomAmenities.roomId = id;
+
+        await this.roomAmenitiesRepo.save(roomAmenities);
+      });
+    }
 
     return this.roomRepo.updateItem(updatedRoom);
   }
@@ -263,8 +285,8 @@ export class RoomService {
   }
 
   async findAvailableRooms(
-    startDate: string | Date,
-    endDate: string | Date,
+    checkIn: string | Date,
+    checkOut: string | Date,
     city?: string,
     page?: number,
     limit?: number,
@@ -279,8 +301,8 @@ export class RoomService {
       .leftJoinAndSelect('room.bookingDate', 'bd')
       .where('room.isActive = :isActive', { isActive: true })
       .andWhere('bd."isAvailable" = :isAvailable', { isAvailable: true })
-      .andWhere('bd."checkIn" >= :startDate', { startDate })
-      .andWhere('bd."checkOut" <= :endDate', { endDate });
+      .andWhere('bd."checkIn" >= :checkInDate', { checkInDate: checkIn })
+      .andWhere('bd."checkOut" <= :checkOutDate', { checkOutDate: checkOut });
 
     if (city) {
       queryBuilder.andWhere('city.name LIKE :cityName', { cityName: `%${city}%` });
@@ -296,5 +318,30 @@ export class RoomService {
         where: { id: In(rooms.map((room) => room.id)) },
       },
     );
+  }
+
+  async getRoomByUserId(userId: number) {
+    const rooms = await this.roomRepo.find({
+      where: { user: { id: userId } },
+      relations: ['roomAmenities'],
+    });
+
+    return rooms;
+  }
+
+  async getRoomUnavailableDate(id: number) {
+    const bookingDate = await this.bookingDateRepo.find({
+      where: { room: { id } },
+      relations: ['room'],
+    });
+
+    const unavailableDates = [];
+
+    bookingDate.forEach((bd) => {
+      const dates = `${bd.checkIn} - ${bd.checkOut}`;
+      unavailableDates.push(dates);
+    });
+
+    return unavailableDates;
   }
 }

@@ -44,6 +44,6 @@ export class RoomAmenities {
   @ManyToOne((type) => Room, (room) => room.roomAmenities)
   room: Room;
 
-  @ManyToOne((type) => Amenities, (amenities) => amenities.roomAmenities)
+  @ManyToOne((type) => Amenities, (amenities) => amenities.roomAmenities, { eager: true })
   amenities: Amenities;
 }

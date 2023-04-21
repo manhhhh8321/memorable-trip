@@ -1,38 +1,38 @@
 export const USER_MESSAGE = {
-  EMAIL_ALREADY_EXIST: 'EMAIL_ALREADY_EXIST',
-  PHONE_ALREADY_EXIST: 'PHONE_ALREADY_EXIST',
-  USER_NOT_FOUND: 'USER_NOT_FOUND',
-  SEND_VERIFICATION_EMAIL_FAILED: 'SEND_VERIFICATION_EMAIL_FAILED',
+  EMAIL_ALREADY_EXIST: 'Email already exists!',
+  PHONE_ALREADY_EXIST: 'Phone number already exists!',
+  USER_NOT_FOUND: 'User not found!',
+  SEND_VERIFICATION_EMAIL_FAILED: 'Failed to send verification email!',
 };
 
 export const MAIL_MESSAGE = {
-  SEND_MAIL_FAILED: 'SEND_MAIL_FAILED',
-  SEND_MAIL_SUCCESS: 'SEND_MAIL_SUCCESS',
-  VERIFICATION_CODE_EXPIRED: 'VERIFICATION_CODE_EXPIRED',
-  VERIFIED_EMAIL_SUCCESSFULLY: 'VERIFIED_EMAIL_SUCCESSFULLY',
+  SEND_MAIL_FAILED: 'Failed to send email!',
+  SEND_MAIL_SUCCESS: 'Email sent successfully!',
+  VERIFICATION_CODE_EXPIRED: 'Verification code has expired!',
+  VERIFIED_EMAIL_SUCCESSFULLY: 'Email verified successfully!',
 };
 
 export const DESCRIPTION_MESSAGE = {
   GET: {
-    NOT_FOUND: 'DESCRIPTION_NOT_FOUND',
+    NOT_FOUND: 'Description not found!',
   },
 };
 
 export const CITY_MESSAGE = {
   GET: {
-    NOT_FOUND: 'CITY_NOT_FOUND',
+    NOT_FOUND: 'City not found!',
   },
 };
 
 export const AMENITIES_MESSAGE = {
   GET: {
-    NOT_FOUND: 'AMENITIES_NOT_FOUND',
+    NOT_FOUND: 'Amenities not found!',
   },
 };
 
 export const ROOM_MESSAGE = {
   GET: {
-    NOT_FOUND: 'ROOM_NOT_FOUND',
+    NOT_FOUND: 'Room not found!',
     NOT_OWNER: 'You do not own this room!',
   },
 };

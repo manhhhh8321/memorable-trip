@@ -59,10 +59,10 @@ export class Room extends BaseModel {
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   discount: RoomDiscount[];
 
-  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room)
+  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room, { cascade: true })
   roomAmenities: RoomAmenities[];
 
-  @OneToMany((type) => Image, (image) => image.room, { cascade: true })
+  @OneToMany((type) => Image, (image) => image.room, { cascade: true, eager: true })
   image: Image[];
 
   @ManyToOne((type) => City, (city) => city.room, { eager: true })
@@ -71,7 +71,7 @@ export class Room extends BaseModel {
   @ManyToOne((type) => Description, (description) => description.room, { eager: true })
   description: Description;
 
-  @ManyToOne((type) => User, (user) => user.room)
+  @ManyToOne((type) => User, (user) => user.room, { eager: true })
   @JoinColumn({ name: 'ownerId' })
   user: User;
 

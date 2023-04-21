@@ -20,15 +20,22 @@ export class Booking extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: BookType,
-  })
-  bookType: BookType;
-
-  @Column({
-    type: 'enum',
-    enum: BookingStatusEnum,
+    enum: ['BOOKED', 'CANCELLED'],
+    enumName: 'booking_status',
   })
   status: BookingStatusEnum;
+
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
+  totalDiscount: number;
+
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
+  totalPrice: number;
 
   @ManyToOne((type) => User, (user) => user.booking, { cascade: true })
   user: User;
@@ -37,7 +44,7 @@ export class Booking extends BaseModel {
   @JoinColumn()
   payment: Payment;
 
-  @OneToOne(() => BookingDate)
+  @OneToOne(() => BookingDate, { cascade: true })
   @JoinColumn()
   bookingDate: BookingDate;
 }

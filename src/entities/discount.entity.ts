@@ -10,18 +10,18 @@ export class Discount extends BaseModel {
   }
 
   @Column({
-    type: 'numeric',
+    type: 'text',
     nullable: true,
   })
-  percentage: number;
+  name: string;
 
   @Column({
-    type: 'timestamp',
+    type: 'date',
     nullable: true,
   })
-  dueDate: string;
+  dueDate: Date;
 
-  @OneToMany((type) => RoomDiscount, (roomDiscount) => roomDiscount.discount, { cascade: true })
+  @OneToMany((type) => RoomDiscount, (roomDiscount) => roomDiscount.discount, { cascade: true, eager: true })
   roomDiscount: RoomDiscount[];
 }
 

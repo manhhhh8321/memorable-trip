@@ -11,13 +11,15 @@ export class Payment extends BaseModel {
 
   @Column({
     type: 'enum',
-    enum: PaymentType,
+    enum: ['CASH', 'CARD'],
+    enumName: 'payment_type',
   })
   paymentType: PaymentType;
 
   @Column({
     type: 'enum',
-    enum: PaymentStatusEnum,
+    enum: ['PENDING', 'COMPLETED'],
+    enumName: 'payment_status',
   })
   status: PaymentStatusEnum;
 

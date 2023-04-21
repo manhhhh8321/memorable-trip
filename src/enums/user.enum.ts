@@ -18,8 +18,17 @@ export enum RoomType {
 
 export enum BookType {}
 
-export enum BookingStatusEnum {}
+export enum BookingStatusEnum {
+  BOOKED = 'BOOKED',
+  CANCELLED = 'CANCELLED',
+}
 
-export enum PaymentType {}
+export enum PaymentType {
+  CASH = 'CASH',
+  CARD = 'CARD',
+}
 
-export enum PaymentStatusEnum {}
+export enum PaymentStatusEnum {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+}

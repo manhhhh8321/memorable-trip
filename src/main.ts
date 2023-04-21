@@ -35,5 +35,6 @@ async function bootstrap() {
   app.setGlobalPrefix(configService.baseUrlPrefix);
 
   await app.listen(SERVER_PORT);
+  console.log(`Server is running on: ${SERVER_PORT}`);
 }
 bootstrap();
