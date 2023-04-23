@@ -28,4 +28,10 @@ export class Payment extends BaseModel {
     nullable: true,
   })
   completedAt: string;
+
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
+  amount: number;
 }

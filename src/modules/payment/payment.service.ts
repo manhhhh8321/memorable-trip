@@ -9,6 +9,7 @@ import { PaymentsRepository } from './payment.repository';
 import qs from 'qs';
 import axios from 'axios';
 import crypto from 'crypto';
+import { VNP_HASHSECRET, VNP_TMNCODE } from 'src/environments';
 
 @Injectable()
 export class PaymentService {
@@ -19,6 +20,46 @@ export class PaymentService {
       status: PaymentStatusEnum.PENDING,
       completedAt: null,
     });
+  }
+
+  async updatePaymentWithTransaction(url: string) {
+    if (!url) {
+      return 'Url is required';
+    }
+
+    const params = new URLSearchParams(url);
+    const responseCode = params.get('vnp_ResponseCode');
+    const tnxRef = params.get('vnp_TxnRef');
+    const payDate = params.get('vnp_PayDate');
+    const amount = params.get('vnp_Amount');
+
+    if (!responseCode || !tnxRef || !payDate) {
+      return 'Invalid params';
+    }
+
+    const year = payDate.slice(0, 4);
+    const month = payDate.slice(4, 6);
+    const day = payDate.slice(6, 8);
+    const hour = payDate.slice(8, 10);
+    const minute = payDate.slice(10, 12);
+    const second = payDate.slice(12, 14);
+
+    const payDateFormatted = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+    if (responseCode === '00' && tnxRef) {
+      const payment = await this.paymentRepo.findOne({ where: { id: tnxRef } });
+
+      if (payment) {
+        payment.completedAt = payDateFormatted;
+        payment.status = PaymentStatusEnum.COMPLETED;
+        payment.amount = Number(amount) / 100 / 23000;
+        await this.paymentRepo.updateItem(payment);
+      }
+
+      return `Payment success with orderId: ${tnxRef}`;
+    } else {
+      return `Payment failed with orderId: ${tnxRef}`;
+    }
   }
 
   findAll() {

@@ -10,6 +10,7 @@ import {
   Query,
   ExecutionContext,
   Res,
+  Put,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentUrlDto, CreatePaymentDto, VnpParamsDto } from './dto/create-payment.dto';
@@ -18,6 +19,7 @@ import moment from 'moment';
 import { VNP_HASHSECRET, VNP_TMNCODE } from 'src/environments';
 import qs from 'qs';
 import crypto from 'crypto';
+import axios from 'axios';
 
 @Controller('payment')
 export class PaymentController {
@@ -28,18 +30,16 @@ export class PaymentController {
     return this.paymentService.findAll();
   }
 
-  @Get('create_payment_url')
-  @Redirect()
+  @Get('create-payment-url')
   createPaymentUrl(@Query() payload: CreatePaymentUrlDto) {
-    const { amount, orderDescription, bankCode, language, orderType } = payload;
+    const { amount, orderDescription, bankCode, language, orderType, orderId } = payload;
     const ipAddr = '192.168.1.100';
     const tmnCode = VNP_TMNCODE;
     const secretKey = VNP_HASHSECRET;
     const vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
-    const returnUrl = 'http://localhost:3000/payment/return';
+    const returnUrl = 'http://127.0.0.1:5173/payment/verify-payment';
     const date = new Date();
     const createDate = moment(date).format('YYYYMMDDHHmmss');
-    const orderId = moment(date).format('HHmmss');
     const currCode = 'VND';
 
     const vnpParams = {
@@ -69,8 +69,14 @@ export class PaymentController {
 
     const redirectUrl =
       vnpUrl + '?' + qs.stringify({ ...sortedVnpParams, vnp_SecureHash: vnpSecureHash }, { encode: false });
-
+    console.log(redirectUrl);
     return { url: redirectUrl, statusCode: 302 };
+  }
+
+  @Put('verify-payment')
+  async getPaymentStatus(@Body() payload: VnpParamsDto) {
+    const { url } = payload;
+    return await this.paymentService.updatePaymentWithTransaction(url);
   }
 
   // @Get('verify_payment')
@@ -119,10 +125,5 @@ export class PaymentController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.paymentService.remove(+id);
-  }
-
-  @Post()
-  async create() {
-    return await this.paymentService.createPaymentUrl('123', 100000);
   }
 }

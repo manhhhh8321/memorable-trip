@@ -31,16 +31,14 @@ export class CreatePaymentUrlDto {
   @IsOptional()
   @IsString()
   language?: string;
+
+  @IsNotEmpty()
+  @IsNumberString()
+  orderId: number;
 }
 
 export class VnpParamsDto {
   @IsNotEmpty()
   @IsString()
-  vnp_TxnRef: string;
-
-  @IsNotEmpty()
-  @IsString()
-  vnp_ResponseCode: string;
-
-  [key: string]: any;
+  url: string;
 }

@@ -94,11 +94,6 @@ export class BookingService {
 
     const payment = await this.paymentService.create(paymentType);
 
-    let paymentUrl = '';
-    if (paymentType === PaymentType.CARD) {
-      paymentUrl = await this.paymentService.createPaymentUrl(payment.id.toString(), totalPrice);
-    }
-
     const booking = await this.bookingRepo.create({
       user: isUserValid,
       bookingDate: bookingDate,
@@ -109,28 +104,27 @@ export class BookingService {
       payment,
     });
 
-    await this.mailService.sendConfirmBookingMail(
-      {
-        email: isUserValid.email,
-        subject: 'Booking Confirmation',
-      },
-      {
-        firstName: isUserValid.firstName,
-        checkIn,
-        checkOut,
-        duration,
-        note,
-        totalPrice,
-        totalDiscount,
-        paymentType,
-        roomName: room.roomName,
-        address: room.address,
-      },
-    );
+    // await this.mailService.sendConfirmBookingMail(
+    //   {
+    //     email: isUserValid.email,
+    //     subject: 'Booking Confirmation',
+    //   },
+    //   {
+    //     firstName: isUserValid.firstName,
+    //     checkIn,
+    //     checkOut,
+    //     duration,
+    //     note,
+    //     totalPrice,
+    //     totalDiscount,
+    //     paymentType,
+    //     roomName: room.roomName,
+    //     address: room.address,
+    //   },
+    // );
 
     return {
       ...booking,
-      paymentUrl: payment.paymentType === PaymentType.CARD ? paymentUrl : null,
     };
   }
 
