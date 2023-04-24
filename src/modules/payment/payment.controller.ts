@@ -79,6 +79,17 @@ export class PaymentController {
     return await this.paymentService.updatePaymentWithTransaction(url);
   }
 
+  @Post('save-order-redis')
+  async saveOrderRedis(@Body() payload: VnpParamsDto) {
+    const { url } = payload;
+    return await this.paymentService.saveOrderRedis(url);
+  }
+
+  @Get('get-order-redis')
+  async getOrderRedis(@Query('orderId') orderId: string) {
+    return await this.paymentService.getOrderRedis(orderId);
+  }
+
   // @Get('verify_payment')
   // handleIpn(@Query() vnpParams: VnpParamsDto, @Res() res: Response) {
   //   const secretKey = VNP_HASHSECRET;

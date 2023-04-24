@@ -10,10 +10,11 @@ import qs from 'qs';
 import axios from 'axios';
 import crypto from 'crypto';
 import { VNP_HASHSECRET, VNP_TMNCODE } from 'src/environments';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly paymentRepo: PaymentsRepository) {}
+  constructor(private readonly paymentRepo: PaymentsRepository, private readonly redisService: RedisService) {}
   async create(paymentType: PaymentType): Promise<Payment> {
     return await this.paymentRepo.create({
       paymentType,
@@ -60,6 +61,25 @@ export class PaymentService {
     } else {
       return `Payment failed with orderId: ${tnxRef}`;
     }
+  }
+
+  async saveOrderRedis(url: string) {
+    const params = new URLSearchParams(url);
+    const responseCode = params.get('vnp_ResponseCode');
+    const tnxRef = params.get('vnp_TxnRef');
+    const payDate = params.get('vnp_PayDate');
+    const amount = params.get('vnp_Amount');
+
+    if (!responseCode || !tnxRef || !payDate) {
+      return 'Invalid params';
+    }
+
+    const rs = await this.redisService.set(tnxRef, JSON.stringify(url), 54000);
+    return rs;
+  }
+
+  async getOrderRedis(orderId: string) {
+    return await this.redisService.get(orderId);
   }
 
   findAll() {
