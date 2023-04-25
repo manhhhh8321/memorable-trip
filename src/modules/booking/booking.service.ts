@@ -104,24 +104,24 @@ export class BookingService {
       payment,
     });
 
-    // await this.mailService.sendConfirmBookingMail(
-    //   {
-    //     email: isUserValid.email,
-    //     subject: 'Booking Confirmation',
-    //   },
-    //   {
-    //     firstName: isUserValid.firstName,
-    //     checkIn,
-    //     checkOut,
-    //     duration,
-    //     note,
-    //     totalPrice,
-    //     totalDiscount,
-    //     paymentType,
-    //     roomName: room.roomName,
-    //     address: room.address,
-    //   },
-    // );
+    await this.mailService.sendConfirmBookingMail(
+      {
+        email: isUserValid.email,
+        subject: 'Booking Confirmation',
+      },
+      {
+        firstName: isUserValid.firstName,
+        checkIn,
+        checkOut,
+        duration,
+        note,
+        totalPrice,
+        totalDiscount,
+        paymentType,
+        roomName: room.roomName,
+        address: room.address,
+      },
+    );
 
     return {
       ...booking,

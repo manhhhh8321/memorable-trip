@@ -11,6 +11,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import { VNP_HASHSECRET, VNP_TMNCODE } from 'src/environments';
 import { RedisService } from '../redis/redis.service';
+import { ErrorHelper } from 'src/helpers/error.utils';
 
 @Injectable()
 export class PaymentService {
@@ -65,17 +66,22 @@ export class PaymentService {
 
   async saveOrderRedis(url: string) {
     const params = new URLSearchParams(url);
+
     const responseCode = params.get('vnp_ResponseCode');
     const tnxRef = params.get('vnp_TxnRef');
     const payDate = params.get('vnp_PayDate');
     const amount = params.get('vnp_Amount');
 
     if (!responseCode || !tnxRef || !payDate) {
-      return 'Invalid params';
+      return ErrorHelper.BadRequestException('Invalid params');
     }
 
-    const rs = await this.redisService.set(tnxRef, JSON.stringify(url), 54000);
+    const rs = await this.redisService.set(tnxRef, url, 840);
     return rs;
+  }
+
+  async deleteOrderRedis(orderId: string) {
+    return await this.redisService.del(orderId);
   }
 
   async getOrderRedis(orderId: string) {

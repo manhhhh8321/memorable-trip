@@ -90,6 +90,11 @@ export class PaymentController {
     return await this.paymentService.getOrderRedis(orderId);
   }
 
+  @Delete('delete-order-redis')
+  async deleteOrderRedis(@Query('orderId') orderId: string) {
+    return await this.paymentService.deleteOrderRedis(orderId);
+  }
+
   // @Get('verify_payment')
   // handleIpn(@Query() vnpParams: VnpParamsDto, @Res() res: Response) {
   //   const secretKey = VNP_HASHSECRET;
