@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from 'src/modules/auth/auth.controller';
@@ -10,13 +11,15 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [AuthModule, ConfigModule],
-    }).compile();
+    })
+      .useMocker(() => createMock())
+      .compile();
 
     authController = app.get<AuthController>(AuthController);
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
+    it('should be  defined', () => {
       expect(authController).toBeDefined();
     });
   });

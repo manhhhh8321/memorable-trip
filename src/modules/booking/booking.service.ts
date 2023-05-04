@@ -207,8 +207,8 @@ export class BookingService {
     qb.leftJoinAndSelect('booking.bookingDate', 'bookingDate');
     qb.leftJoinAndSelect('bookingDate.room', 'room');
     qb.leftJoinAndSelect('booking.payment', 'payment');
-    qb.where('user.id = :userId', { userId });
-    qb.andWhere('booking.status = :status', { status: BookingStatusEnum.BOOKED });
+    qb.where('room.ownerId = :userId', { userId });
+
     return this.bookingRepo.paginationQueryBuilder(qb, { page, limit });
   }
 

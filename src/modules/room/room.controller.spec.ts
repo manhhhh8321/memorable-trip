@@ -1,20 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BookingController } from './booking.controller';
-import { BookingModule } from './booking.module';
+import { RoomController } from './room.controller';
+import { RoomModule } from './room.module';
 import { createMock } from '@golevelup/ts-jest';
 
-describe('BookingController', () => {
-  let controller: BookingController;
+describe('RoomController', () => {
+  let controller: RoomController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [BookingModule],
-      controllers: [BookingController],
+      imports: [RoomModule],
+      controllers: [RoomController],
     })
       .useMocker(() => createMock())
       .compile();
 
-    controller = module.get<BookingController>(BookingController);
+    controller = module.get<RoomController>(RoomController);
   });
 
   it('should be defined', () => {

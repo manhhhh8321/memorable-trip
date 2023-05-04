@@ -35,6 +35,9 @@ export class BookingController {
     {
       userType: UserType.CLIENT,
     },
+    {
+      userType: UserType.OWNER,
+    },
   ])
   async findAll(@Query('page') page: number, @Query('limit') limit: number, @Req() req: any) {
     const userId = req.user.id;
@@ -49,7 +52,7 @@ export class BookingController {
     return this.bookingService.findAllByUserId(userId, page, limit);
   }
 
-  @Get('list-booked')
+  @Get('/owner')
   @UseGuards(AuthGuard)
   @Auth([
     {

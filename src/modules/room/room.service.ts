@@ -160,7 +160,9 @@ export class RoomService {
       numberOfBed,
       numberOfBedroom,
       numberOfLivingRoom,
-      cityCode,
+      city,
+      checkIn,
+      checkOut,
     } = searchCriteria;
 
     const where: any = {};
@@ -211,16 +213,36 @@ export class RoomService {
       where.numberOfLivingRoom = numberOfLivingRoom;
     }
 
-    if (cityCode) {
+    if (city) {
+      const c = await this.cityRepo.findOne({ name: city });
       const qb = await this.roomRepo.createQueryBuilder('room');
 
       const subquery = await qb
         .innerJoin('room.city', 'city')
-        .where('city.code = :code', { code: cityCode })
+        .where('city.code = :code', { code: c.code })
         .select('room.id')
         .getMany();
 
       where.id = In(subquery.map((room) => room.id));
+    }
+
+    if (checkIn && checkOut) {
+      const activeRooms = await this.roomRepo.find({
+        where: { isActive: true },
+      });
+
+      const queryBuilder = getRepository(Room)
+        .createQueryBuilder('room')
+        .leftJoinAndSelect('room.bookingDate', 'bd')
+        .where('room.isActive = :isActive', { isActive: true })
+        .andWhere('bd."isAvailable" = :isAvailable', { isAvailable: true })
+        .andWhere('bd."checkIn" >= :checkInDate', { checkInDate: checkIn })
+        .andWhere('bd."checkOut" <= :checkOutDate', { checkOutDate: checkOut });
+
+      const bookingDateRooms = await queryBuilder.getMany();
+      const rooms = [...activeRooms, ...bookingDateRooms];
+
+      where.id = In(rooms.map((room) => room.id));
     }
 
     return this.roomRepo.paginationRepository(this.roomEntityRepo, options, {

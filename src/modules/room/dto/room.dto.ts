@@ -144,8 +144,8 @@ export class GetListDto {
   price: number;
 
   @IsOptional()
-  @IsNumberString()
-  cityCode: string;
+  @IsEnum(VALID_PROVINCES_CODE)
+  city: string;
 
   @IsOptional()
   @IsNumberString()
@@ -175,6 +175,14 @@ export class GetListDto {
   @IsOptional()
   @IsEnum(RoomType)
   roomType: RoomType;
+
+  @IsOptional()
+  @IsDateString()
+  checkIn: Date;
+
+  @IsOptional()
+  @IsDateString()
+  checkOut: Date;
 }
 
 export class QueryAvailableRoomDto {

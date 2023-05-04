@@ -7,6 +7,7 @@ import { Amenities, Discount, Room, RoomDiscount } from 'src/entities';
 import { RoomModule } from '../room/room.module';
 import { UserModule } from '../user/user.module';
 import { City } from 'src/entities/city.entity';
+import { createMock } from '@golevelup/ts-jest';
 
 describe('DiscountController', () => {
   let controller: DiscountController;
@@ -17,28 +18,9 @@ describe('DiscountController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [RoomModule, UserModule, TypeOrmModule.forFeature([Discount, RoomDiscount, Room, City])],
       controllers: [DiscountController],
-      providers: [
-        DiscountService,
-        {
-          provide: getRepositoryToken(Discount),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(RoomDiscount),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(Room),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(City),
-          useValue: {},
-        },
-      ],
+      providers: [DiscountService],
     })
-      .overrideProvider(RoomService)
-      .useValue({})
+      .useMocker(() => createMock())
       .compile();
 
     controller = module.get<DiscountController>(DiscountController);

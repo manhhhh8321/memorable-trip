@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BookingService } from './booking.service';
+import { MailService } from './mail.service';
 import { createMock } from '@golevelup/ts-jest';
 
-describe('BookingService', () => {
-  let service: BookingService;
+describe('MailService', () => {
+  let service: MailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BookingService],
+      providers: [MailService],
     })
       .useMocker(() => createMock())
       .compile();
 
-    service = module.get<BookingService>(BookingService);
+    service = module.get<MailService>(MailService);
   });
 
   it('should be defined', () => {
