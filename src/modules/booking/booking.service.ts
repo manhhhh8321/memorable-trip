@@ -216,8 +216,15 @@ export class BookingService {
     return `This action returns a #${id} booking`;
   }
 
-  update(id: number, updateBookingDto: UpdateBookingDto) {
-    return `This action updates a #${id} booking`;
+  async update(id: number, updateBookingDto: UpdateBookingDto) {
+    const booking = await this.bookingRepo.findById(id);
+    if (!booking) {
+      ErrorHelper.NotFoundException('Booking not found');
+    }
+
+    Object.assign(booking, updateBookingDto);
+
+    return this.bookingRepo.updateItem(booking);
   }
 
   remove(id: number) {

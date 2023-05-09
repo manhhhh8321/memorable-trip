@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsIn,
@@ -137,6 +138,10 @@ export class UpdateRoomDto {
   @IsOptional()
   @IsString()
   address: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive: boolean;
 }
 
 export class GetListDto {

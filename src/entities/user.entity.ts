@@ -6,6 +6,7 @@ import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne } fro
 import { Exclude } from 'class-transformer';
 import { GenderEnum } from 'src/enums/base.enum';
 import { Room } from './room.entity';
+import { Wishlist } from './wishlist.entity';
 
 @Entity()
 export class User extends BaseModel {
@@ -74,4 +75,7 @@ export class User extends BaseModel {
 
   @OneToMany((type) => Room, (room) => room.user)
   room: Room[];
+
+  @OneToMany((type) => Wishlist, (wishlist) => wishlist.user)
+  wishlist: Wishlist[];
 }

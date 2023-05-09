@@ -26,6 +26,6 @@ export class PhoneLoginDto {
   @IsPhoneNumber('VN')
   phone: string;
 
-  @IsString({ message: 'Code invalid' })
+  @IsNotEmpty()
   code: string;
 }

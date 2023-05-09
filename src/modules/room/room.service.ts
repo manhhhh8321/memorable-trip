@@ -165,7 +165,9 @@ export class RoomService {
       checkOut,
     } = searchCriteria;
 
-    const where: any = {};
+    const where: any = {
+      isActive: true,
+    };
 
     if (price) {
       where.price = LessThanOrEqual(price);
@@ -356,7 +358,6 @@ export class RoomService {
       where: { user: { id: userId } },
       relations: ['roomAmenities'],
     });
-
     return rooms;
   }
 

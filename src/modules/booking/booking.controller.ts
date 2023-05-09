@@ -72,11 +72,32 @@ export class BookingController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Auth([
+    {
+      userType: UserType.ADMIN,
+    },
+    {
+      userType: UserType.OWNER,
+    },
+  ])
   update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
     return this.bookingService.update(+id, updateBookingDto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
+  @Auth([
+    {
+      userType: UserType.ADMIN,
+    },
+    {
+      userType: UserType.CLIENT,
+    },
+    {
+      userType: UserType.OWNER,
+    },
+  ])
   remove(@Param('id') id: string) {
     return this.bookingService.remove(+id);
   }
