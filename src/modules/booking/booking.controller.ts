@@ -35,6 +35,9 @@ export class BookingController {
     {
       userType: UserType.CLIENT,
     },
+    {
+      userType: UserType.OWNER,
+    },
   ])
   async findAll(@Query('page') page: number, @Query('limit') limit: number, @Req() req: any) {
     const userId = req.user.id;
@@ -49,7 +52,7 @@ export class BookingController {
     return this.bookingService.findAllByUserId(userId, page, limit);
   }
 
-  @Get('list-booked')
+  @Get('/owner')
   @UseGuards(AuthGuard)
   @Auth([
     {
@@ -69,11 +72,32 @@ export class BookingController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Auth([
+    {
+      userType: UserType.ADMIN,
+    },
+    {
+      userType: UserType.OWNER,
+    },
+  ])
   update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
     return this.bookingService.update(+id, updateBookingDto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
+  @Auth([
+    {
+      userType: UserType.ADMIN,
+    },
+    {
+      userType: UserType.CLIENT,
+    },
+    {
+      userType: UserType.OWNER,
+    },
+  ])
   remove(@Param('id') id: string) {
     return this.bookingService.remove(+id);
   }

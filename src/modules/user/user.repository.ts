@@ -12,7 +12,19 @@ export class UsersRepository extends BaseRepository<User> {
   }
 
   async findByEmail(email: string): Promise<User> {
-    return await this.userRepo.findOne({ email: email });
+    return await this.userRepo.findOne({
+      where: {
+        email,
+      },
+    });
+  }
+
+  async findByPhone(phone: string): Promise<User> {
+    return await this.userRepo.findOne({
+      where: {
+        phone,
+      },
+    });
   }
 
   async update(id: number, payload: DeepPartial<User>) {

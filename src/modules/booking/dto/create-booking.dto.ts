@@ -8,7 +8,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { PaymentType } from 'src/enums/user.enum';
+import { BookingStatusEnum, PaymentType } from 'src/enums/user.enum';
 
 export class CreateBookingDto {
   @IsNotEmpty()
@@ -32,4 +32,8 @@ export class CreateBookingDto {
   @IsNotEmpty()
   @IsDateString()
   checkOut: Date;
+
+  @IsOptional()
+  @IsEnum(BookingStatusEnum)
+  status?: string;
 }

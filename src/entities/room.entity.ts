@@ -4,6 +4,7 @@ import { City } from 'src/entities/city.entity';
 import { Amenities, RoomAmenities } from 'src/entities/amenities.entity';
 import { Discount, RoomDiscount, Image, Description, User, Booking, BookingDate } from 'src/entities/index';
 import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Wishlist } from './wishlist.entity';
 
 @Entity()
 export class Room extends BaseModel {
@@ -59,7 +60,7 @@ export class Room extends BaseModel {
   @OneToMany((types) => RoomDiscount, (roomDiscount) => roomDiscount.room, { cascade: true })
   discount: RoomDiscount[];
 
-  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room, { cascade: true })
+  @OneToMany(() => RoomAmenities, (roomAmenities) => roomAmenities.room)
   roomAmenities: RoomAmenities[];
 
   @OneToMany((type) => Image, (image) => image.room, { cascade: true, eager: true })
@@ -77,4 +78,7 @@ export class Room extends BaseModel {
 
   @OneToMany((types) => BookingDate, (bookingDate) => bookingDate.room, { cascade: true, eager: true })
   bookingDate: BookingDate[];
+
+  @OneToMany((types) => Wishlist, (wishlist) => wishlist.room, { cascade: true })
+  wishlist: Wishlist[];
 }

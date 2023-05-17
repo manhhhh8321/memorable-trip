@@ -47,8 +47,18 @@ export class UserService {
 
     const isPhoneExist = await this.findByPhone(phone);
 
-    if (isPhoneExist) {
+    if (isPhoneExist && isPhoneExist.id !== user.id) {
       ErrorHelper.BadRequestException(USER_MESSAGE.PHONE_ALREADY_EXIST);
+    }
+
+    const isMailExist = await this.userRepo.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (isMailExist && isMailExist.id !== user.id) {
+      ErrorHelper.BadRequestException(USER_MESSAGE.EMAIL_ALREADY_EXIST);
     }
 
     try {

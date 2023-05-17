@@ -11,6 +11,7 @@ import { ImageKitModule } from './modules/imageKit/imagekit.module';
 import { BookingModule } from './modules/booking/booking.module';
 import { DiscountModule } from './modules/discount/discount.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { WishlistModule } from './modules/wishlist/wishlist.module';
 @Module({
   imports: [
     AuthModule,
@@ -22,6 +23,7 @@ import { PaymentModule } from './modules/payment/payment.module';
     BookingModule,
     DiscountModule,
     PaymentModule,
+    WishlistModule,
   ],
 })
 export class AppModule {}

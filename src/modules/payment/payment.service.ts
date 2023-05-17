@@ -6,16 +6,86 @@ import { Payment } from 'src/entities';
 import { Repository } from 'typeorm';
 import { PaymentStatusEnum, PaymentType } from 'src/enums/user.enum';
 import { PaymentsRepository } from './payment.repository';
+import qs from 'qs';
+import axios from 'axios';
+import crypto from 'crypto';
+import { VNP_HASHSECRET, VNP_TMNCODE } from 'src/environments';
+import { RedisService } from '../redis/redis.service';
+import { ErrorHelper } from 'src/helpers/error.utils';
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly paymentRepo: PaymentsRepository) {}
+  constructor(private readonly paymentRepo: PaymentsRepository, private readonly redisService: RedisService) {}
   async create(paymentType: PaymentType): Promise<Payment> {
     return await this.paymentRepo.create({
       paymentType,
       status: PaymentStatusEnum.PENDING,
       completedAt: null,
     });
+  }
+
+  async updatePaymentWithTransaction(url: string) {
+    if (!url) {
+      return 'Url is required';
+    }
+
+    const params = new URLSearchParams(url);
+    const responseCode = params.get('vnp_ResponseCode');
+    const tnxRef = params.get('vnp_TxnRef');
+    const payDate = params.get('vnp_PayDate');
+    const amount = params.get('vnp_Amount');
+
+    if (!responseCode || !tnxRef || !payDate) {
+      return 'Invalid params';
+    }
+
+    const year = payDate.slice(0, 4);
+    const month = payDate.slice(4, 6);
+    const day = payDate.slice(6, 8);
+    const hour = payDate.slice(8, 10);
+    const minute = payDate.slice(10, 12);
+    const second = payDate.slice(12, 14);
+
+    const payDateFormatted = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+    if (responseCode === '00' && tnxRef) {
+      const payment = await this.paymentRepo.findOne({ where: { id: tnxRef } });
+
+      if (payment) {
+        payment.completedAt = payDateFormatted;
+        payment.status = PaymentStatusEnum.COMPLETED;
+        payment.amount = Number(amount) / 100 / 23000;
+        await this.paymentRepo.updateItem(payment);
+      }
+
+      return `Payment success with orderId: ${tnxRef}`;
+    } else {
+      return `Payment failed with orderId: ${tnxRef}`;
+    }
+  }
+
+  async saveOrderRedis(url: string) {
+    const params = new URLSearchParams(url);
+
+    const responseCode = params.get('vnp_ResponseCode');
+    const tnxRef = params.get('vnp_TxnRef');
+    const payDate = params.get('vnp_PayDate');
+    const amount = params.get('vnp_Amount');
+
+    if (!responseCode || !tnxRef || !payDate) {
+      return ErrorHelper.BadRequestException('Invalid params');
+    }
+
+    const rs = await this.redisService.set(tnxRef, url, 840);
+    return rs;
+  }
+
+  async deleteOrderRedis(orderId: string) {
+    return await this.redisService.del(orderId);
+  }
+
+  async getOrderRedis(orderId: string) {
+    return await this.redisService.get(orderId);
   }
 
   findAll() {

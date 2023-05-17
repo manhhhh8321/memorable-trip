@@ -41,7 +41,7 @@ export class RoomAmenities {
   @PrimaryColumn()
   amenitiesId: number;
 
-  @ManyToOne((type) => Room, (room) => room.roomAmenities)
+  @ManyToOne((type) => Room, (room) => room.roomAmenities, { cascade: true })
   room: Room;
 
   @ManyToOne((type) => Amenities, (amenities) => amenities.roomAmenities, { eager: true })

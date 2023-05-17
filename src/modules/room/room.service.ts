@@ -10,7 +10,7 @@ import {
   ROOM_MESSAGE,
   USER_MESSAGE,
 } from 'src/constants/message.constant';
-import { BookingDate, Room, RoomAmenities } from 'src/entities';
+import { BookingDate, Image, Room, RoomAmenities } from 'src/entities';
 import { City } from 'src/entities/city.entity';
 import { ErrorHelper } from 'src/helpers/error.utils';
 import {
@@ -43,6 +43,7 @@ export class RoomService {
     @InjectRepository(RoomAmenities) private readonly roomAmenitiesRepo: Repository<RoomAmenities>,
     @InjectRepository(Room) private readonly roomEntityRepo: Repository<Room>,
     @InjectRepository(BookingDate) private readonly bookingDateRepo: Repository<BookingDate>,
+    @InjectRepository(Image) private readonly imageRepo: Repository<Image>,
   ) {}
 
   async seedCity() {
@@ -129,6 +130,14 @@ export class RoomService {
     });
 
     await this.userService.update(userId, { userType: UserType.OWNER });
+    image.forEach(async (i) => {
+      const img = new Image({
+        url: i,
+        room: r,
+      });
+
+      await this.imageRepo.save(img);
+    });
 
     return r;
   }
@@ -151,10 +160,14 @@ export class RoomService {
       numberOfBed,
       numberOfBedroom,
       numberOfLivingRoom,
-      cityCode,
+      city,
+      checkIn,
+      checkOut,
     } = searchCriteria;
 
-    const where: any = {};
+    const where: any = {
+      isActive: true,
+    };
 
     if (price) {
       where.price = LessThanOrEqual(price);
@@ -202,16 +215,36 @@ export class RoomService {
       where.numberOfLivingRoom = numberOfLivingRoom;
     }
 
-    if (cityCode) {
+    if (city) {
+      const c = await this.cityRepo.findOne({ name: city });
       const qb = await this.roomRepo.createQueryBuilder('room');
 
       const subquery = await qb
         .innerJoin('room.city', 'city')
-        .where('city.code = :code', { code: cityCode })
+        .where('city.code = :code', { code: c.code })
         .select('room.id')
         .getMany();
 
       where.id = In(subquery.map((room) => room.id));
+    }
+
+    if (checkIn && checkOut) {
+      const activeRooms = await this.roomRepo.find({
+        where: { isActive: true },
+      });
+
+      const queryBuilder = getRepository(Room)
+        .createQueryBuilder('room')
+        .leftJoinAndSelect('room.bookingDate', 'bd')
+        .where('room.isActive = :isActive', { isActive: true })
+        .andWhere('bd."isAvailable" = :isAvailable', { isAvailable: true })
+        .andWhere('bd."checkIn" >= :checkInDate', { checkInDate: checkIn })
+        .andWhere('bd."checkOut" <= :checkOutDate', { checkOutDate: checkOut });
+
+      const bookingDateRooms = await queryBuilder.getMany();
+      const rooms = [...activeRooms, ...bookingDateRooms];
+
+      where.id = In(rooms.map((room) => room.id));
     }
 
     return this.roomRepo.paginationRepository(this.roomEntityRepo, options, {
@@ -325,7 +358,6 @@ export class RoomService {
       where: { user: { id: userId } },
       relations: ['roomAmenities'],
     });
-
     return rooms;
   }
 

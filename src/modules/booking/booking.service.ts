@@ -24,7 +24,7 @@ export class BookingService {
     private readonly paymentService: PaymentService,
     private readonly mailService: MailService,
   ) {}
-  async createBooking(customerId: number, payload: CreateBookingDto): Promise<Booking> {
+  async createBooking(customerId: number, payload: CreateBookingDto) {
     const { checkIn, checkOut, roomId, paymentType, note } = payload;
     const isUserValid = await this.userService.findById(customerId);
 
@@ -123,7 +123,9 @@ export class BookingService {
       },
     );
 
-    return booking;
+    return {
+      ...booking,
+    };
   }
 
   calculateDuration(checkIn: Date, checkOut: Date): string {
@@ -205,8 +207,8 @@ export class BookingService {
     qb.leftJoinAndSelect('booking.bookingDate', 'bookingDate');
     qb.leftJoinAndSelect('bookingDate.room', 'room');
     qb.leftJoinAndSelect('booking.payment', 'payment');
-    qb.where('user.id = :userId', { userId });
-    qb.andWhere('booking.status = :status', { status: BookingStatusEnum.BOOKED });
+    qb.where('room.ownerId = :userId', { userId });
+
     return this.bookingRepo.paginationQueryBuilder(qb, { page, limit });
   }
 
@@ -214,8 +216,15 @@ export class BookingService {
     return `This action returns a #${id} booking`;
   }
 
-  update(id: number, updateBookingDto: UpdateBookingDto) {
-    return `This action updates a #${id} booking`;
+  async update(id: number, updateBookingDto: UpdateBookingDto) {
+    const booking = await this.bookingRepo.findById(id);
+    if (!booking) {
+      ErrorHelper.NotFoundException('Booking not found');
+    }
+
+    Object.assign(booking, updateBookingDto);
+
+    return this.bookingRepo.updateItem(booking);
   }
 
   remove(id: number) {
